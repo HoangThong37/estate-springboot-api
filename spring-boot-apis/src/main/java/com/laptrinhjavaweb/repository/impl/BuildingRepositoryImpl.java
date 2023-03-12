@@ -19,9 +19,9 @@ import com.laptrinhjavaweb.util.checkInputSearch;
 @Repository
 public class BuildingRepositoryImpl implements BuildingRepository {
 	
-	Connection conn = null;
-    Statement stmt = null;
-	ResultSet rs = null;
+	private Connection conn = null;
+	private Statement stmt;
+	private ResultSet rs;
 	// private checkInputSearch checkInputSearch = new checkInputSearch();
 
 	@Override
@@ -32,7 +32,7 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 			 conn.setAutoCommit(false);
 			 if (conn != null) {
 				 stmt = conn.createStatement();
-				 ResultSet rs = stmt.executeQuery(querrySearch(buildingSearchRequest)); // querry search
+				 rs = stmt.executeQuery(querrySearch(buildingSearchRequest)); // querry search
 				 while (rs.next()) { // Xử lý kết quả trả về
 					BuildingEntity buildingEntity = new BuildingEntity();
 					buildingEntity.setId(rs.getLong("id"));
@@ -46,20 +46,19 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 					buildingEntity.setRentPrice(rs.getInt("rentprice"));
 					buildingEntity.setRentPriceDescription(rs.getString("rentpricedescription"));
 					buildingEntity.setServiceFee(rs.getString("servicefee"));
-//					buildingEntity.setSt
 					buildingEntities.add(buildingEntity);
 				}
 			}
-		 // conn.commit();
+		  conn.commit();
 		} catch (Exception e) {
-			//	conn.rollback();
-				System.out.println("Error JDBC ");
+				conn.rollback();
+				System.out.println("Error jdbc building");
 				e.printStackTrace();
 			
 		} finally {
-	 		// conn.close();
-          //  rs.close();
-           // stmt.close();
+	 		  conn.close();
+              rs.close();
+            stmt.close();
 		}
 		return buildingEntities;	
 	}
@@ -72,7 +71,7 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 			stringBuilder.append(" inner join rentarea as ra on b.id = ra.buildingid ");
 		}
 		
-		// rent types
+		// loại tòa nhà
 		if (buildingSearchRequest.getRentTypes() != null &&  buildingSearchRequest.getRentTypes().size() > 0) {
 			stringBuilder.append(" inner join buildingrenttype as br on b.id = br.buildingid \r\n" + 
 								 " inner join renttype as rt on br.renttypeid = rt.id ");
@@ -136,6 +135,8 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 		if (!checkInputSearch.isNullInt(buildingSearchRequest.getStaffId())) {
 			stringBuilder.append(" and u.id = " + buildingSearchRequest.getStaffId() + " ");
 		}
+		
+		// 
 		
 		return stringBuilder.toString();
 	}

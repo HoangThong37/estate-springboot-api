@@ -14,9 +14,11 @@ import com.laptrinhjavaweb.dto.BuildingDTO;
 import com.laptrinhjavaweb.dto.request.BuildingSearchRequest;
 import com.laptrinhjavaweb.dto.response.BuildingSearchResponse;
 import com.laptrinhjavaweb.entity.BuildingEntity;
+import com.laptrinhjavaweb.entity.DistrictEntity;
 import com.laptrinhjavaweb.enums.BuildingTypesEnum;
 import com.laptrinhjavaweb.enums.DistrictsEnum;
 import com.laptrinhjavaweb.repository.BuildingRepository;
+import com.laptrinhjavaweb.repository.DistrictRepository;
 import com.laptrinhjavaweb.service.IBuildingService;
 
 @Service
@@ -27,6 +29,9 @@ public class BuildingService implements IBuildingService {
 	
 	@Autowired
 	private BuildingRepository buildingRepository;
+	
+	@Autowired
+	private DistrictRepository districtRepository;
 	
 	@Override
 	public Map<String, String> getDistricts() {
@@ -54,7 +59,9 @@ public class BuildingService implements IBuildingService {
 		List<BuildingSearchResponse> responses = new ArrayList<>();
 		System.out.println("vô service rồi");
 		for (BuildingEntity item : buildingRepository.findBuilding(buildingSearchRequest)) {
-			BuildingSearchResponse response = buildingConverter.convertEntityToBuildingResponse(item);
+			DistrictEntity districtEntity = districtRepository.findDistrictById(item.getDistrictId());
+			String districtName = districtEntity.getName();
+			BuildingSearchResponse response = buildingConverter.convertEntityToBuildingResponse(item, districtName);
 			responses.add(response);
 		}
 		return responses;

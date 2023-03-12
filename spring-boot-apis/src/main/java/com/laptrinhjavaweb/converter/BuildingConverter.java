@@ -34,8 +34,8 @@ public class BuildingConverter {
 	}
 	
 	// convert Entity-to-BuildingSearchResponse
-	public BuildingSearchResponse convertEntityToBuildingResponse(BuildingEntity entity) {
-		String address = entity.getStreet() + " - " + entity.getWard() + " - " +  entity.getDistrictId();
+	public BuildingSearchResponse convertEntityToBuildingResponse(BuildingEntity entity, String districtName) {
+		String address = entity.getStreet() + " - " + entity.getWard() + " - " +  districtName;
 		BuildingSearchResponse response = modelMapper.map(entity, BuildingSearchResponse.class);
 		response.setAddress(address);
 		
