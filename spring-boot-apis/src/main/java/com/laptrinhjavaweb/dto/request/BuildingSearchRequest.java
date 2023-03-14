@@ -6,7 +6,7 @@ import java.util.List;
 public class BuildingSearchRequest {
 	private long id;
 	private String name;
-	private String floorArea;  // diện tích sàn
+	private Integer floorArea;  // diện tích sàn
 	private String districtCode;  // quận
 	private String ward;   // phường
 	private String street; // đường
@@ -62,10 +62,11 @@ public class BuildingSearchRequest {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getFloorArea() {
+	
+	public Integer getFloorArea() {
 		return floorArea;
 	}
-	public void setFloorArea(String floorArea) {
+	public void setFloorArea(Integer floorArea) {
 		this.floorArea = floorArea;
 	}
 	public String getDistrictCode() {

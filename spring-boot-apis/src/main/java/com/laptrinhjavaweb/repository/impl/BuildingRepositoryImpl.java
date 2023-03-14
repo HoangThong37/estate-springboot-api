@@ -110,7 +110,7 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 		}
 		// Search chính xác
 		// floorarea
-		if (!checkInputSearch.isNullStr(request.getFloorArea())) {
+		if (!checkInputSearch.isNullInt(request.getFloorArea())) {
 			sqlNotJoin.append(" and b.floorarea = " + request.getFloorArea() + "");
 		}
 		// numberOfBasement

@@ -78,7 +78,7 @@ public class BuildingService implements IBuildingService {
     		searchRequest.setStreet((String) ValidateUtil.validateSearch(fieldSearch.get("street")));
     		searchRequest.setDirection((String) ValidateUtil.validateSearch(fieldSearch.get("direction")));
     		searchRequest.setLevel((String) ValidateUtil.validateSearch(fieldSearch.get("level")));
-    		searchRequest.setFloorArea((String) ValidateUtil.validateSearch(fieldSearch.get("floorarea")));
+    		searchRequest.setFloorArea((Integer) ValidateUtil.validateSearch(fieldSearch.get("floorarea")));
     		searchRequest.setNumberOfBasement((Integer) ValidateUtil.validateSearch(fieldSearch.get("numberofbasement")));
     		searchRequest.setRentAreaFrom((Integer) ValidateUtil.validateSearch(fieldSearch.get("rentAreaFrom")));
     		searchRequest.setRentAreaTo((Integer) ValidateUtil.validateSearch(fieldSearch.get("rentAreaTo")));
