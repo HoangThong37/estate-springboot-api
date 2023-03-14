@@ -12,6 +12,6 @@ public interface IBuildingService {
 	Map<String, String> getDistricts();
 	Map<String, String> getBuildingTypes();
 	BuildingDTO save(BuildingDTO newBuilding);
-	List<BuildingSearchResponse> getBuildingList(BuildingSearchRequest buildingSearchRequest) throws SQLException;
+	List<BuildingSearchResponse> getBuildingList(Map<String, Object> fieldSearch) throws SQLException;
 	
 }

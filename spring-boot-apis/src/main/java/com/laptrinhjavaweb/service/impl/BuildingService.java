@@ -20,6 +20,7 @@ import com.laptrinhjavaweb.enums.DistrictsEnum;
 import com.laptrinhjavaweb.repository.BuildingRepository;
 import com.laptrinhjavaweb.repository.DistrictRepository;
 import com.laptrinhjavaweb.service.IBuildingService;
+import com.laptrinhjavaweb.util.ValidateUtil;
 
 @Service
 public class BuildingService implements IBuildingService {
@@ -55,10 +56,11 @@ public class BuildingService implements IBuildingService {
     // search building by field 
 	// return building response
 	@Override
-	public List<BuildingSearchResponse> getBuildingList(BuildingSearchRequest buildingSearchRequest) throws SQLException {
+	public List<BuildingSearchResponse> getBuildingList(Map<String, Object> fieldSearch) throws SQLException {
 		List<BuildingSearchResponse> responses = new ArrayList<>();
 		System.out.println("vô service rồi");
-		for (BuildingEntity item : buildingRepository.findBuilding(buildingSearchRequest)) {
+		BuildingSearchRequest request = searchFieldParams(fieldSearch);
+		for (BuildingEntity item : buildingRepository.findBuilding(request)) {
 			DistrictEntity districtEntity = districtRepository.findDistrictById(item.getDistrictId());
 			String districtName = districtEntity.getName();
 			BuildingSearchResponse response = buildingConverter.convertEntityToBuildingResponse(item, districtName);
@@ -66,12 +68,38 @@ public class BuildingService implements IBuildingService {
 		}
 		return responses;
 	}
+	
+    // client search request
+	private BuildingSearchRequest searchFieldParams(Map<String, Object> fieldSearch) {
+		BuildingSearchRequest searchRequest = new BuildingSearchRequest();
+        try {
+    		searchRequest.setName((String) ValidateUtil.validateSearch(fieldSearch.get("name")));
+    		searchRequest.setWard((String) ValidateUtil.validateSearch(fieldSearch.get("ward")));
+    		searchRequest.setStreet((String) ValidateUtil.validateSearch(fieldSearch.get("street")));
+    		searchRequest.setDirection((String) ValidateUtil.validateSearch(fieldSearch.get("direction")));
+    		searchRequest.setLevel((String) ValidateUtil.validateSearch(fieldSearch.get("level")));
+    		searchRequest.setFloorArea((String) ValidateUtil.validateSearch(fieldSearch.get("floorarea")));
+    		searchRequest.setNumberOfBasement((Integer) ValidateUtil.validateSearch(fieldSearch.get("numberofbasement")));
+    		searchRequest.setRentAreaFrom((Integer) ValidateUtil.validateSearch(fieldSearch.get("rentAreaFrom")));
+    		searchRequest.setRentAreaTo((Integer) ValidateUtil.validateSearch(fieldSearch.get("rentAreaTo")));
+    		searchRequest.setRentPriceFrom((Integer) ValidateUtil.validateSearch(fieldSearch.get("rentPriceFrom")));
+    		searchRequest.setRentPriceTo((Integer) ValidateUtil.validateSearch(fieldSearch.get("rentPriceTo")));
+    		searchRequest.setStaffId((Integer) ValidateUtil.validateSearch(fieldSearch.get("staffId")));  // nv quản lí -gửi id
+    		searchRequest.setDistrictCode((String) ValidateUtil.validateSearch(fieldSearch.get("districtCode"))); // districtCode
+    		
+        } catch (Exception e) {
+        	System.out.println("Error service search request");
+			e.printStackTrace();
+		}
+		return searchRequest;
+	}
 
 	@Override
 	public BuildingDTO save(BuildingDTO newBuilding) {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 
 /*	@Override
 	@Transactional
