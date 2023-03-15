@@ -56,11 +56,13 @@ public class BuildingService implements IBuildingService {
     // search building by field 
 	// return building response
 	@Override
-	public List<BuildingSearchResponse> getBuildingList(Map<String, Object> fieldSearch) throws SQLException {
+	public List<BuildingSearchResponse> getBuildingList(Map<String, String> fieldSearch, List<String> types) throws SQLException {
 		List<BuildingSearchResponse> responses = new ArrayList<>();
 		System.out.println("vô service rồi");
-		BuildingSearchRequest request = searchFieldParams(fieldSearch);
-		for (BuildingEntity item : buildingRepository.findBuilding(request)) {
+		 // BuildingSearchRequest request = searchFieldParams(fieldSearch);
+		List<BuildingEntity> buildingEntities = buildingRepository.findBuilding(fieldSearch, types);
+		
+		for (BuildingEntity item : buildingEntities) {
 			DistrictEntity districtEntity = districtRepository.findDistrictById(item.getDistrictId());
 			String districtName = districtEntity.getName();
 			BuildingSearchResponse response = buildingConverter.convertEntityToBuildingResponse(item, districtName);
@@ -69,8 +71,10 @@ public class BuildingService implements IBuildingService {
 		return responses;
 	}
 	
-    // client search request
-	private BuildingSearchRequest searchFieldParams(Map<String, Object> fieldSearch) {
+
+/*	// client search request
+    // 
+	private BuildingSearchRequest searchFieldParams(Map<String, String> fieldSearch) {
 		BuildingSearchRequest searchRequest = new BuildingSearchRequest();
         try {
     		searchRequest.setName((String) ValidateUtil.validateSearch(fieldSearch.get("name")));
@@ -92,13 +96,8 @@ public class BuildingService implements IBuildingService {
 			e.printStackTrace();
 		}
 		return searchRequest;
-	}
+	}*/
 
-	@Override
-	public BuildingDTO save(BuildingDTO newBuilding) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 
 /*	@Override

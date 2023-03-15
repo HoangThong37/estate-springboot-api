@@ -27,9 +27,10 @@ public class BuildingAPI {
 //	}
 	
 	@GetMapping("/api/building")
-	public List<BuildingSearchResponse> searchBuilding(@RequestParam(required = false) Map<String, Object> fieldSearch) 
+	public List<BuildingSearchResponse> searchBuilding(@RequestParam(required = false) Map<String, String> fieldSearch,
+			                                           @RequestParam(required = false) List<String> types) 
 			                            throws SQLException {
-		return buildingService.getBuildingList(fieldSearch);
+		return buildingService.getBuildingList(fieldSearch, types);
 	}
 
 	

@@ -1,6 +1,7 @@
 package com.laptrinhjavaweb.dto.response;
 
 import java.util.Date;
+import java.util.List;
 
 public class BuildingSearchResponse {
     private long id;
@@ -16,7 +17,7 @@ public class BuildingSearchResponse {
     private Date modifiedDate;
     private String createdBy;
     private String modifiedBy;
-    
+
 	public long getId() {
 		return id;
 	}

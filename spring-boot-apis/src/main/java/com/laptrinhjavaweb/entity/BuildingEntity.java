@@ -1,5 +1,8 @@
 package com.laptrinhjavaweb.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BuildingEntity extends BaseEntity {
 
     private String name;
@@ -28,7 +31,6 @@ public class BuildingEntity extends BaseEntity {
     private String linkofbuilding;
     private String map;
     private String image;
-
     
 	public String getName() {
 		return name;
@@ -187,6 +189,7 @@ public class BuildingEntity extends BaseEntity {
 	public void setImage(String image) {
 		this.image = image;
 	}
+
 }
 
 

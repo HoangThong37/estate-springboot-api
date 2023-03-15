@@ -8,10 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.type.TrueFalseType;
 import org.springframework.stereotype.Repository;
 
-import com.laptrinhjavaweb.dto.request.BuildingSearchRequest;
 import com.laptrinhjavaweb.entity.BuildingEntity;
 import com.laptrinhjavaweb.repository.BuildingRepository;
 import com.laptrinhjavaweb.util.ConnectDB;
@@ -26,7 +24,7 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 	// private checkInputSearch checkInputSearch = new checkInputSearch();
 
 	@Override
-	public List<BuildingEntity> findBuilding(BuildingSearchRequest request) throws SQLException {
+	public List<BuildingEntity> findBuilding(Map<String, String> request, List<String> types) throws SQLException {
 	    List<BuildingEntity> buildingEntities = new ArrayList<>();
 		try {
 			 conn = ConnectDB.getConnection(); // connect db
@@ -37,7 +35,7 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 				 StringBuilder sqlJoin = new StringBuilder();
 				 StringBuilder sqlNotJoin = new StringBuilder();
 				 
-				 sqlWithJoin(request, sqlJoin, sqlNotJoin); // join table
+				 sqlWithJoin(request, sqlJoin, types, sqlNotJoin); // join table
 				 sqlNoJoin(request, sqlNotJoin);   // no join table
 				 
 				 querry.append(sqlJoin).append(" where 1=1 ").append(sqlNotJoin);
@@ -74,71 +72,101 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 		return buildingEntities;	
 	}
 
-	private void sqlWithJoin(BuildingSearchRequest request, StringBuilder sqlJoin, StringBuilder sqlNotJoin) {
+	// Build query với JOIN thì xử lý luôn WHERE cho quý khách, đỡ phải check nhiều lần
+	private void sqlWithJoin(Map<String, String> request, StringBuilder sqlJoin, List<String> types, StringBuilder sqlNotJoin) {
 		// join rentare
-	   if (!checkInputSearch.isNullInt(request.getRentAreaFrom()) || !checkInputSearch.isNullInt(request.getRentAreaTo())) {
-	         	sqlJoin.append(" inner join rentarea as ra on b.id = ra.buildingid ");
-	      }
-	   // type building
-		if (request.getRentTypes() != null &&  request.getRentTypes().size() > 0) {
+		// Search form and to of rentArea (diện tích thuê)
+		String rentAreaFrom = request.get("rentAreaFrom");
+		String rentAreaTo = request.get("rentAreaTo");
+		if (!checkInputSearch.isNullStr(rentAreaFrom) || !checkInputSearch.isNullStr(rentAreaTo)) {
+			sqlJoin.append(" inner join rentarea as ra on b.id = ra.buildingid ");
+				if (!checkInputSearch.isNullStr(rentAreaFrom)) {
+					sqlJoin.append(" and ra.value <= " + rentAreaFrom + "");
+				}
+				if (!checkInputSearch.isNullStr(rentAreaTo)) {
+					sqlJoin.append(" and ra.value >= " + rentAreaTo + "");
+				}
+		}
+		
+	    // type building -> list
+		if (types != null &&  !types.isEmpty()) {
 			sqlJoin.append(" inner join buildingrenttype as br on b.id = br.buildingid \r\n" + 
 								 " inner join renttype as rt on br.renttypeid = rt.id ");
+			// xử lý types building
+			List<String> buildingTypes = new ArrayList<>();
+			for (String item : types) {
+				buildingTypes.add("rt.code LIKE '%" + item + "%'");
+			}
+			sqlJoin.append(" AND( " + String.join(" - ", buildingTypes) + " )");
 		}
-		// nhân viên quản lí
-		if (!checkInputSearch.isNullInt(request.getStaffId())) {
-			sqlJoin.append(" inner join assignmentbuilding ab on b.id = ab.buildingid inner join user as u  on ab.staffid = u.id ");
-		}
-	}
-	
-	
-	private void sqlNoJoin(BuildingSearchRequest request, StringBuilder sqlNotJoin) {
-		if (!checkInputSearch.isNullStr(request.getName())) {
-			sqlNotJoin.append(" and b.name LIKE '%" + request.getName() + "%'");
-		}
-		// phường, đường, hướng, hạng
-		if (!checkInputSearch.isNullStr(request.getWard())) {
-			sqlNotJoin.append(" and b.ward LIKE '%" + request.getWard() + "%'");
-		}
-		if (!checkInputSearch.isNullStr(request.getStreet())) {
-			sqlNotJoin.append(" and b.street LIKE '%" + request.getStreet() + "%'");
-		}
-		if (!checkInputSearch.isNullStr(request.getDirection())) {
-			sqlNotJoin.append(" and b.direction LIKE '%" + request.getDirection() + "%'");
-		}
-		if (!checkInputSearch.isNullStr(request.getLevel())) {
-			sqlNotJoin.append(" and b.level LIKE '%" + request.getLevel() + "%'");
-		}
-		// Search chính xác
-		// floorarea
-		if (!checkInputSearch.isNullInt(request.getFloorArea())) {
-			sqlNotJoin.append(" and b.floorarea = " + request.getFloorArea() + "");
-		}
-		// numberOfBasement
-		if (!checkInputSearch.isNullInt(request.getNumberOfBasement())) {
-			sqlNotJoin.append(" and b.numberofbasement = " + request.getNumberOfBasement() + "");
-		}
-		// Search From - To
-		// Search form and to of rentArea (diện tích thuê)
-		if (!checkInputSearch.isNullInt(request.getRentAreaFrom())) {
-			sqlNotJoin.append(" and ra.value <= " + request.getRentAreaFrom() + "");
-		}
-		if (!checkInputSearch.isNullInt(request.getRentAreaTo())) {
-			sqlNotJoin.append(" and ra.value >= " + request.getRentAreaTo() + "");
-		}
-		// Search form and to of rentprice (giá thuê from -> to)
-		if (!checkInputSearch.isNullInt(request.getRentPriceFrom())) {
-			sqlNotJoin.append(" and b.rentprice <= " + request.getRentPriceFrom() + "");
-		}
-		if (!checkInputSearch.isNullInt(request.getRentPriceTo())) {
-			sqlNotJoin.append(" and b.rentprice >= " + request.getRentPriceTo() + "");
-		}
+		
 		// search staff 
-		if (!checkInputSearch.isNullInt(request.getStaffId())) {
-			sqlNotJoin.append(" and u.id = " + request.getStaffId() + " ");
+		// nhân viên quản lí
+		String staff = request.get("staffid");
+		if (!checkInputSearch.isNullStr(staff)) {
+			sqlJoin.append(" inner join assignmentbuilding ab on b.id = ab.buildingid inner join user as u  on ab.staffid = u.id ");
+				if (!checkInputSearch.isNullStr(staff)) {
+					sqlJoin.append(" and u.id = " + staff + " ");
+				}
 		}
-
+	}
+	
+	
+	private void sqlNoJoin(Map<String, String> request, StringBuilder sqlNotJoin) {
+		// search field name
+		String name = request.get("name");
+		if (!checkInputSearch.isNullStr(name)) {
+			sqlNotJoin.append(" and b.name LIKE '%" + name + "%'");
+		}
+	
+		// phường, đường, hướng, hạng
+		String ward = request.get("ward");
+		if (!checkInputSearch.isNullStr(ward)) {
+			sqlNotJoin.append(" and b.ward LIKE '%" + ward + "%'");
+		}
+		
+		String street = request.get("street");
+		if (!checkInputSearch.isNullStr(street)) {
+			sqlNotJoin.append(" and b.street LIKE '%" + street + "%'");
+		}
+		
+		String direction = request.get("direction");
+		if (!checkInputSearch.isNullStr(direction)) {
+			sqlNotJoin.append(" and b.direction LIKE '%" + direction + "%'");
+		}
+		
+		String level = request.get("level");
+		if (!checkInputSearch.isNullStr(level)) {
+			sqlNotJoin.append(" and b.level LIKE '%" + level + "%'");
+		}
+		
+		// Search chính xác
+		String floorarea = request.get("floorarea");
+		if (!checkInputSearch.isNullStr(floorarea)) {
+			sqlNotJoin.append(" and b.floorarea = " + floorarea + "");
+		}
+		
+		// numberOfBasement
+		String numberofbasement = request.get("numberofbasement");
+		if (!checkInputSearch.isNullStr(numberofbasement)) {
+			sqlNotJoin.append(" and b.numberofbasement = " + numberofbasement + "");
+		}
+		
+		// Search form and to of rentprice (giá thuê from -> to)
+		String rentPriceFrom = request.get("rentAreaFrom");
+		String rentPriceTo = request.get("rentAreaTo");
+		if (!checkInputSearch.isNullStr(rentPriceFrom)) {
+			sqlNotJoin.append(" and b.rentprice <= " + rentPriceFrom + "");
+		}
+		if (!checkInputSearch.isNullStr(rentPriceTo)) {
+			sqlNotJoin.append(" and b.rentprice >= " + rentPriceTo + "");
+		}
 	}
 
+	
+	
+	
+	
 //	private String querrySearch(BuildingSearchRequest buildingSearchRequest) {
 //		StringBuilder stringBuilder = new StringBuilder("SELECT * FROM building as b ");
 //		// inner join rentArea (diện tích thuê)

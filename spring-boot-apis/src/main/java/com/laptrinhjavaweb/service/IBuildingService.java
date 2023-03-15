@@ -11,7 +11,7 @@ import com.laptrinhjavaweb.dto.response.BuildingSearchResponse;
 public interface IBuildingService {
 	Map<String, String> getDistricts();
 	Map<String, String> getBuildingTypes();
-	BuildingDTO save(BuildingDTO newBuilding);
-	List<BuildingSearchResponse> getBuildingList(Map<String, Object> fieldSearch) throws SQLException;
+	// BuildingDTO save(BuildingDTO newBuilding);
+	List<BuildingSearchResponse> getBuildingList(Map<String, String> fieldSearch, List<String> types) throws SQLException;
 	
 }
