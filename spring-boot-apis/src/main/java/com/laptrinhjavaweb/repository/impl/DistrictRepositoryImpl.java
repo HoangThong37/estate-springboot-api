@@ -28,7 +28,7 @@ public class DistrictRepositoryImpl implements DistrictRepository {
 				 stmt = conn.createStatement();
 				 rs = stmt.executeQuery("SELECT * FROM district where id = " + id); // querry search
 				 while (rs.next()) { // Xử lý kết quả trả về
-				    districtEntity.setId(rs.getInt("id"));
+				    districtEntity.setId(rs.getLong("id"));
 				    districtEntity.setCode(rs.getString("code"));
 				    districtEntity.setName(rs.getString("name"));
 				 }

@@ -38,7 +38,7 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 				 sqlWithJoin(request, sqlJoin, types, sqlNotJoin); // join table
 				 sqlNoJoin(request, sqlNotJoin);   // no join table
 				 
-				 querry.append(sqlJoin).append(" where 1=1 ").append(sqlNotJoin);
+				 querry.append(sqlJoin).append(" where 1=1 ").append(sqlNotJoin).append(" GROUP BY b.id");
 				 
 				 rs = stmt.executeQuery(querry.toString());
 				 // rs = stmt.executeQuery(querrySearch(buildingSearchRequest)); // querry search
@@ -72,7 +72,7 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 		return buildingEntities;	
 	}
 
-	// Build query với JOIN thì xử lý luôn WHERE cho quý khách, đỡ phải check nhiều lần
+	
 	private void sqlWithJoin(Map<String, String> request, StringBuilder sqlJoin, List<String> types, StringBuilder sqlNotJoin) {
 		// join rentare
 		// Search form and to of rentArea (diện tích thuê)
@@ -88,6 +88,15 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 				}
 		}
 		
+		// districtId
+		String districtId = request.get("districtid");
+		if (!checkInputSearch.isNullStr(districtId)) {
+			sqlJoin.append(" inner join district as d on b.districtid = d.id ");
+				if (!checkInputSearch.isNullStr(districtId)) {
+					sqlJoin.append(" and d.code = '" + districtId + "'");
+				}
+		}
+
 	    // type building -> list
 		if (types != null &&  !types.isEmpty()) {
 			sqlJoin.append(" inner join buildingrenttype as br on b.id = br.buildingid \r\n" + 
@@ -97,11 +106,10 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 			for (String item : types) {
 				buildingTypes.add("rt.code LIKE '%" + item + "%'");
 			}
-			sqlJoin.append(" AND( " + String.join(" - ", buildingTypes) + " )");
+			sqlJoin.append(" AND( " + String.join(" OR ", buildingTypes) + " )");
 		}
 		
 		// search staff 
-		// nhân viên quản lí
 		String staff = request.get("staffid");
 		if (!checkInputSearch.isNullStr(staff)) {
 			sqlJoin.append(" inner join assignmentbuilding ab on b.id = ab.buildingid inner join user as u  on ab.staffid = u.id ");
@@ -167,69 +175,6 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 	
 	
 	
-//	private String querrySearch(BuildingSearchRequest buildingSearchRequest) {
-//		StringBuilder stringBuilder = new StringBuilder("SELECT * FROM building as b ");
-//		// inner join rentArea (diện tích thuê)
-//		if (!checkInputSearch.isNullInt(buildingSearchRequest.getRentAreaFrom()) || !checkInputSearch.isNullInt(buildingSearchRequest.getRentAreaTo())) {
-//			stringBuilder.append(" inner join rentarea as ra on b.id = ra.buildingid ");
-//		}
-//		// loại tòa nhà
-//		if (buildingSearchRequest.getRentTypes() != null &&  buildingSearchRequest.getRentTypes().size() > 0) {
-//			stringBuilder.append(" inner join buildingrenttype as br on b.id = br.buildingid \r\n" + 
-//								 " inner join renttype as rt on br.renttypeid = rt.id ");
-//		}
-//		// nhân viên quản lí
-//		if (!checkInputSearch.isNullInt(buildingSearchRequest.getStaffId())) {
-//			stringBuilder.append(" inner join assignmentbuilding ab on b.id = ab.buildingid inner join user as u  on ab.staffid = u.id ");
-//		}
-//		stringBuilder.append(" WHERE 1=1 ");
-//		// search gần đúng
-//		// name building
-//		if (!checkInputSearch.isNullStr(buildingSearchRequest.getName())) {
-//			stringBuilder.append(" and b.name LIKE '%" + buildingSearchRequest.getName() + "%'");
-//		}
-//		// phường, đường, hướng, hạng
-//		if (!checkInputSearch.isNullStr(buildingSearchRequest.getWard())) {
-//			stringBuilder.append(" and b.ward LIKE '%" + buildingSearchRequest.getWard() + "%'");
-//		}
-//		if (!checkInputSearch.isNullStr(buildingSearchRequest.getStreet())) {
-//			stringBuilder.append(" and b.street LIKE '%" + buildingSearchRequest.getStreet() + "%'");
-//		}
-//		if (!checkInputSearch.isNullStr(buildingSearchRequest.getDirection())) {
-//			stringBuilder.append(" and b.direction LIKE '%" + buildingSearchRequest.getDirection() + "%'");
-//		}
-//		if (!checkInputSearch.isNullStr(buildingSearchRequest.getLevel())) {
-//			stringBuilder.append(" and b.level LIKE '%" + buildingSearchRequest.getLevel() + "%'");
-//		}
-//		// Search chính xác
-//		// floorarea
-//		if (!checkInputSearch.isNullStr(buildingSearchRequest.getFloorArea())) {
-//			stringBuilder.append(" and b.floorarea = " + buildingSearchRequest.getFloorArea() + "");
-//		}
-//		// numberOfBasement
-//		if (!checkInputSearch.isNullInt(buildingSearchRequest.getNumberOfBasement())) {
-//			stringBuilder.append(" and b.numberofbasement = " + buildingSearchRequest.getNumberOfBasement() + "");
-//		}
-//		// Search From - To
-//		// Search form and to of rentArea (diện tích thuê)
-//		if (!checkInputSearch.isNullInt(buildingSearchRequest.getRentAreaFrom())) {
-//			stringBuilder.append(" and ra.value <= " + buildingSearchRequest.getRentAreaFrom() + "");
-//		}
-//		if (!checkInputSearch.isNullInt(buildingSearchRequest.getRentAreaTo())) {
-//			stringBuilder.append(" and ra.value >= " + buildingSearchRequest.getRentAreaTo() + "");
-//		}
-//		// Search form and to of rentprice (giá thuê from -> to)
-//		if (!checkInputSearch.isNullInt(buildingSearchRequest.getRentPriceFrom())) {
-//			stringBuilder.append(" and b.rentprice <= " + buildingSearchRequest.getRentPriceFrom() + "");
-//		}
-//		if (!checkInputSearch.isNullInt(buildingSearchRequest.getRentPriceTo())) {
-//			stringBuilder.append(" and b.rentprice >= " + buildingSearchRequest.getRentPriceTo() + "");
-//		}
-//		// search staff 
-//		if (!checkInputSearch.isNullInt(buildingSearchRequest.getStaffId())) {
-//			stringBuilder.append(" and u.id = " + buildingSearchRequest.getStaffId() + " ");
-//		}
-//		return stringBuilder.toString();
-//	}
+
 	
 }

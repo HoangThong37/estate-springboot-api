@@ -2,13 +2,15 @@ package com.laptrinhjavaweb.entity;
 
 public class DistrictEntity {
 	
-	private Integer id;
+	private Long id;
 	private String name;
 	private String code;
-	public Integer getId() {
+
+
+	public Long getId() {
 		return id;
 	}
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 	public String getName() {
