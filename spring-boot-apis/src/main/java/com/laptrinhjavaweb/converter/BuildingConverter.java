@@ -38,15 +38,18 @@ public class BuildingConverter {
 	public BuildingSearchResponse convertEntityToBuildingResponse(BuildingEntity entity, String districtName, List<RentAreaEntity> rentArea) {
 		String address = entity.getStreet() + " - " + entity.getWard() + " - " +  districtName;
 
-		List<String> joinString = new ArrayList<>();
+		List<Integer> joinString = new ArrayList<>();
+		//StringBuilder list = new StringBuilder();
 		for (RentAreaEntity item : rentArea) {
 			if (item.getBuildingid() == entity.getId()) {
-				joinString.add(item.toString());
+				joinString.add(item.getValue());
+				//list.append(item.getValue());
 			}
 		}
 		BuildingSearchResponse response = modelMapper.map(entity, BuildingSearchResponse.class);
 		response.setAddress(address);
 	    response.setRentArea(joinString);
+		//response.setRentArea(list);
 		
 		return response;
 	}
