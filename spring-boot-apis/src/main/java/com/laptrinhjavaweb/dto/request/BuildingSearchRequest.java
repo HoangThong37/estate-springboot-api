@@ -24,45 +24,18 @@ public class BuildingSearchRequest {
     private Date modifiedDate;
     private String createdBy;
     private String modifiedBy;
-    
-	public Date getCreatedDate() {
-		return createdDate;
-	}
-	public void setCreatedDate(Date createdDate) {
-		this.createdDate = createdDate;
-	}
-	public Date getModifiedDate() {
-		return modifiedDate;
-	}
-	public void setModifiedDate(Date modifiedDate) {
-		this.modifiedDate = modifiedDate;
-	}
-	public String getCreatedBy() {
-		return createdBy;
-	}
-	public void setCreatedBy(String createdBy) {
-		this.createdBy = createdBy;
-	}
-	public String getModifiedBy() {
-		return modifiedBy;
-	}
-	public void setModifiedBy(String modifiedBy) {
-		this.modifiedBy = modifiedBy;
-	}
 	public long getId() {
 		return id;
 	}
 	public void setId(long id) {
 		this.id = id;
 	}
-
 	public String getName() {
 		return name;
 	}
 	public void setName(String name) {
 		this.name = name;
 	}
-	
 	public Integer getFloorArea() {
 		return floorArea;
 	}
@@ -123,18 +96,17 @@ public class BuildingSearchRequest {
 	public void setRentPriceFrom(Integer rentPriceFrom) {
 		this.rentPriceFrom = rentPriceFrom;
 	}
-	public Integer getAreaRentTo() {
-		return areaRentTo;
-	}
-	public void setAreaRentTo(Integer areaRentTo) {
-		this.areaRentTo = areaRentTo;
-	}
-	
 	public Integer getRentPriceTo() {
 		return rentPriceTo;
 	}
 	public void setRentPriceTo(Integer rentPriceTo) {
 		this.rentPriceTo = rentPriceTo;
+	}
+	public Integer getAreaRentTo() {
+		return areaRentTo;
+	}
+	public void setAreaRentTo(Integer areaRentTo) {
+		this.areaRentTo = areaRentTo;
 	}
 	public Integer getStaffId() {
 		return staffId;
@@ -148,4 +120,30 @@ public class BuildingSearchRequest {
 	public void setRentTypes(List<String> rentTypes) {
 		this.rentTypes = rentTypes;
 	}
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+	public Date getModifiedDate() {
+		return modifiedDate;
+	}
+	public void setModifiedDate(Date modifiedDate) {
+		this.modifiedDate = modifiedDate;
+	}
+	public String getCreatedBy() {
+		return createdBy;
+	}
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+	public String getModifiedBy() {
+		return modifiedBy;
+	}
+	public void setModifiedBy(String modifiedBy) {
+		this.modifiedBy = modifiedBy;
+	}
+    
+	
 }

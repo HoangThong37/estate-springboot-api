@@ -33,12 +33,13 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 				 stmt = conn.createStatement();
 				 StringBuilder querry = new StringBuilder("SELECT * FROM building as b "); 
 				 StringBuilder sqlJoin = new StringBuilder();
+				 StringBuilder sqlWhere = new StringBuilder(" where 1=1 ");
 				 StringBuilder sqlNotJoin = new StringBuilder();
 				 
-				 sqlWithJoin(request, sqlJoin, types, sqlNotJoin); // join table
+				 sqlWithJoin(request, sqlJoin, sqlWhere, types, sqlNotJoin); // join table
 				 sqlNoJoin(request, sqlNotJoin);   // no join table
 				 
-				 querry.append(sqlJoin).append(" where 1=1 ").append(sqlNotJoin).append(" GROUP BY b.id");
+				 querry.append(sqlJoin).append(sqlWhere).append(sqlNotJoin).append(" GROUP BY b.id");
 				 
 				 rs = stmt.executeQuery(querry.toString());
 				 // rs = stmt.executeQuery(querrySearch(buildingSearchRequest)); // querry search
@@ -52,9 +53,13 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 					buildingEntity.setStructure(rs.getString("structure"));
 					buildingEntity.setNumberOfBasement(rs.getInt("numberofbasement"));
 					buildingEntity.setFloorArea(rs.getInt("floorarea")); // dtich sàn
+					
 					buildingEntity.setRentPrice(rs.getInt("rentprice"));
 					buildingEntity.setRentPriceDescription(rs.getString("rentpricedescription"));
 					buildingEntity.setServiceFee(rs.getString("servicefee"));
+					buildingEntity.setRentAreaId(rs.getInt("value"));
+					// buildingEntity.setRentAreaFrom(rs.getInt("rentAreaFrom"));
+					// buildingEntity.setRentAreaTo(rs.getInt("rentAreaTo"));
 					buildingEntities.add(buildingEntity);
 				}
 			}
@@ -73,19 +78,20 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 	}
 
 	
-	private void sqlWithJoin(Map<String, String> request, StringBuilder sqlJoin, List<String> types, StringBuilder sqlNotJoin) {
+	private void sqlWithJoin(Map<String, String> request, StringBuilder sqlJoin, StringBuilder sqlWhere, List<String> types, StringBuilder sqlNotJoin) {
 		// join rentare
 		// Search form and to of rentArea (diện tích thuê)
 		String rentAreaFrom = request.get("rentAreaFrom");
 		String rentAreaTo = request.get("rentAreaTo");
 		if (!checkInputSearch.isNullStr(rentAreaFrom) || !checkInputSearch.isNullStr(rentAreaTo)) {
 			sqlJoin.append(" inner join rentarea as ra on b.id = ra.buildingid ");
-				if (!checkInputSearch.isNullStr(rentAreaFrom)) {
-					sqlJoin.append(" and ra.value <= " + rentAreaFrom + "");
-				}
-				if (!checkInputSearch.isNullStr(rentAreaTo)) {
-					sqlJoin.append(" and ra.value >= " + rentAreaTo + "");
-				}
+
+			if (!checkInputSearch.isNullStr(rentAreaFrom)) {
+				sqlWhere.append(" and ra.value >= " + rentAreaFrom + "");
+			}
+			if (!checkInputSearch.isNullStr(rentAreaTo)) {
+				sqlWhere.append(" and ra.value <= " + rentAreaTo + "");
+			}
 		}
 		
 		// districtId
@@ -161,8 +167,8 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 		}
 		
 		// Search form and to of rentprice (giá thuê from -> to)
-		String rentPriceFrom = request.get("rentAreaFrom");
-		String rentPriceTo = request.get("rentAreaTo");
+		String rentPriceFrom = request.get("rentPriceFrom");
+		String rentPriceTo = request.get("rentPriceTo");
 		if (!checkInputSearch.isNullStr(rentPriceFrom)) {
 			sqlNotJoin.append(" and b.rentprice <= " + rentPriceFrom + "");
 		}

@@ -10,17 +10,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.laptrinhjavaweb.converter.BuildingConverter;
-import com.laptrinhjavaweb.dto.BuildingDTO;
-import com.laptrinhjavaweb.dto.request.BuildingSearchRequest;
 import com.laptrinhjavaweb.dto.response.BuildingSearchResponse;
 import com.laptrinhjavaweb.entity.BuildingEntity;
 import com.laptrinhjavaweb.entity.DistrictEntity;
+import com.laptrinhjavaweb.entity.RentAreaEntity;
 import com.laptrinhjavaweb.enums.BuildingTypesEnum;
 import com.laptrinhjavaweb.enums.DistrictsEnum;
 import com.laptrinhjavaweb.repository.BuildingRepository;
 import com.laptrinhjavaweb.repository.DistrictRepository;
+import com.laptrinhjavaweb.repository.RentAreaRepository;
 import com.laptrinhjavaweb.service.IBuildingService;
-import com.laptrinhjavaweb.util.ValidateUtil;
 
 @Service
 public class BuildingService implements IBuildingService {
@@ -33,6 +32,9 @@ public class BuildingService implements IBuildingService {
 	
 	@Autowired
 	private DistrictRepository districtRepository;
+	
+	@Autowired
+	private RentAreaRepository rentAreaRepository;
 	
 	@Override
 	public Map<String, String> getDistricts() {
@@ -62,9 +64,14 @@ public class BuildingService implements IBuildingService {
 		List<BuildingEntity> buildingEntities = buildingRepository.findBuilding(fieldSearch, types);
 		
 		for (BuildingEntity item : buildingEntities) {
+			
 			DistrictEntity districtEntity = districtRepository.findDistrictById(item.getDistrictId());
 			String districtName = districtEntity.getName();
-			BuildingSearchResponse response = buildingConverter.convertEntityToBuildingResponse(item, districtName);
+			
+			// rentArea 
+			List<RentAreaEntity> rentArea = rentAreaRepository.findRentArea(item.getRentAreaId());
+				
+			BuildingSearchResponse response = buildingConverter.convertEntityToBuildingResponse(item, districtName, rentArea);
 			responses.add(response);
 		}
 		return responses;

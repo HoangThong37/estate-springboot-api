@@ -1,6 +1,5 @@
 package com.laptrinhjavaweb.entity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class BuildingEntity extends BaseEntity {
@@ -31,11 +30,19 @@ public class BuildingEntity extends BaseEntity {
     private String linkofbuilding;
     private String map;
     private String image;
-    
+	private Integer rentAreaId;
+
+	
+	
 	public String getName() {
 		return name;
 	}
-
+	public Integer getRentAreaId() {
+		return rentAreaId;
+	}
+	public void setRentAreaId(Integer rentAreaId) {
+		this.rentAreaId = rentAreaId;
+	}
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -190,6 +197,7 @@ public class BuildingEntity extends BaseEntity {
 		this.image = image;
 	}
 
+	
 }
 
 
