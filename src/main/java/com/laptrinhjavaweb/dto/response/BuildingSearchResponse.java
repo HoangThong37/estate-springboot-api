@@ -17,18 +17,17 @@ public class BuildingSearchResponse {
     private Date modifiedDate;
     private String createdBy;
     private String modifiedBy;
-	 private List<Integer> rentArea; // đẩy ra dạng value1,value2
+	 private String rentArea; // đẩy ra dạng value1,value2
     //private StringBuilder rentArea;
-	public List<Integer> getRentArea() {
-		return rentArea;
-	}
-
-	public void setRentArea(List<Integer> rentArea) {
-		this.rentArea = rentArea;
-	}
 
 	public long getId() {
 		return id;
+	}
+	public String getRentArea() {
+		return rentArea;
+	}
+	public void setRentArea(String rentArea) {
+		this.rentArea = rentArea;
 	}
 	public void setId(long id) {
 		this.id = id;

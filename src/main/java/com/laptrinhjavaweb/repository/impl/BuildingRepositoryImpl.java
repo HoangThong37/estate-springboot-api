@@ -53,13 +53,11 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 					buildingEntity.setStructure(rs.getString("structure"));
 					buildingEntity.setNumberOfBasement(rs.getInt("numberofbasement"));
 					buildingEntity.setFloorArea(rs.getInt("floorarea")); // dtich sàn
-					
 					buildingEntity.setRentPrice(rs.getInt("rentprice"));
 					buildingEntity.setRentPriceDescription(rs.getString("rentpricedescription"));
 					buildingEntity.setServiceFee(rs.getString("servicefee"));
 					buildingEntity.setRentAreaId(rs.getInt("value"));
-					// buildingEntity.setRentAreaFrom(rs.getInt("rentAreaFrom"));
-					// buildingEntity.setRentAreaTo(rs.getInt("rentAreaTo"));
+				    
 					buildingEntities.add(buildingEntity);
 				}
 			}
@@ -98,9 +96,7 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 		String districtId = request.get("districtid");
 		if (!checkInputSearch.isNullStr(districtId)) {
 			sqlJoin.append(" inner join district as d on b.districtid = d.id ");
-				if (!checkInputSearch.isNullStr(districtId)) {
-					sqlJoin.append(" and d.code = '" + districtId + "'");
-				}
+			sqlWhere.append(" and d.code = '" + districtId + "'");
 		}
 
 	    // type building -> list
@@ -119,9 +115,7 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 		String staff = request.get("staffid");
 		if (!checkInputSearch.isNullStr(staff)) {
 			sqlJoin.append(" inner join assignmentbuilding ab on b.id = ab.buildingid inner join user as u  on ab.staffid = u.id ");
-				if (!checkInputSearch.isNullStr(staff)) {
-					sqlJoin.append(" and u.id = " + staff + " ");
-				}
+			sqlWhere.append(" and u.id = " + staff + " ");
 		}
 	}
 	
@@ -177,10 +171,4 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 		}
 	}
 
-	
-	
-	
-	
-
-	
 }

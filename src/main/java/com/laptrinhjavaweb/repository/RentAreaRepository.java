@@ -8,5 +8,4 @@ import com.laptrinhjavaweb.entity.RentAreaEntity;
 
 public interface RentAreaRepository {
 	List<RentAreaEntity> findRentArea(Integer id) throws SQLException;
-	
 }

@@ -31,9 +31,14 @@ public class BuildingEntity extends BaseEntity {
     private String map;
     private String image;
 	private Integer rentAreaId;
-
+	private Integer staffId;
 	
-	
+	public Integer getStaffId() {
+		return staffId;
+	}
+	public void setStaffId(Integer staffId) {
+		this.staffId = staffId;
+	}
 	public String getName() {
 		return name;
 	}

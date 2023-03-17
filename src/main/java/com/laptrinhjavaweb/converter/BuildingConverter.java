@@ -12,6 +12,8 @@ import com.laptrinhjavaweb.dto.response.BuildingSearchResponse;
 import com.laptrinhjavaweb.entity.BuildingEntity;
 import com.laptrinhjavaweb.entity.RentAreaEntity;
 
+import antlr.StringUtils;
+
 @Component
 public class BuildingConverter {
 	
@@ -37,15 +39,18 @@ public class BuildingConverter {
 	// convert Entity-to-BuildingSearchResponse
 	public BuildingSearchResponse convertEntityToBuildingResponse(BuildingEntity entity, String districtName, List<RentAreaEntity> rentArea) {
 		String address = entity.getStreet() + " - " + entity.getWard() + " - " +  districtName;
-
-		List<Integer> joinString = new ArrayList<>();
+         
+		String joinString = "";
+		//List<Integer> joinString = new ArrayList<>();
 		//StringBuilder list = new StringBuilder();
 		for (RentAreaEntity item : rentArea) {
 			if (item.getBuildingid() == entity.getId()) {
-				joinString.add(item.getValue());
-				//list.append(item.getValue());
+				joinString += item.getValue().toString() + "," ;
 			}
 		}
+	    if (joinString != null && joinString.charAt(joinString.length() - 1) == ',') {
+	    	joinString = joinString.substring(0, joinString.length() - 1);
+	    }
 		BuildingSearchResponse response = modelMapper.map(entity, BuildingSearchResponse.class);
 		response.setAddress(address);
 	    response.setRentArea(joinString);
