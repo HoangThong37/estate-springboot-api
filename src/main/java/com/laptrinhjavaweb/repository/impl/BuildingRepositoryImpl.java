@@ -34,12 +34,13 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 				 StringBuilder querry = new StringBuilder("SELECT * FROM building as b "); 
 				 StringBuilder sqlJoin = new StringBuilder();
 				 StringBuilder sqlWhere = new StringBuilder(" where 1=1 ");
-				 StringBuilder sqlNotJoin = new StringBuilder();
+				 // StringBuilder sqlNotJoin = new StringBuilder();
 				 
-				 sqlWithJoin(request, sqlJoin, sqlWhere, types, sqlNotJoin); // join table
-				 sqlNoJoin(request, sqlNotJoin);   // no join table
+				 sqlWithJoin(request, sqlJoin, sqlWhere, types); // join table
+      //	     sqlNoJoin(request, sqlNotJoin);   // no join table
+				 sqlNoJoin(request, sqlWhere);
 				 
-				 querry.append(sqlJoin).append(sqlWhere).append(sqlNotJoin).append(" GROUP BY b.id");
+				 querry.append(sqlJoin).append(sqlWhere).append(" GROUP BY b.id");
 				 
 				 rs = stmt.executeQuery(querry.toString());
 				 // rs = stmt.executeQuery(querrySearch(buildingSearchRequest)); // querry search
@@ -56,7 +57,7 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 					buildingEntity.setRentPrice(rs.getInt("rentprice"));
 					buildingEntity.setRentPriceDescription(rs.getString("rentpricedescription"));
 					buildingEntity.setServiceFee(rs.getString("servicefee"));
-					buildingEntity.setRentAreaId(rs.getInt("value"));
+					//buildingEntity.setRentAreaId(rs.getInt("value"));
 				    
 					buildingEntities.add(buildingEntity);
 				}
@@ -76,7 +77,7 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 	}
 
 	
-	private void sqlWithJoin(Map<String, String> request, StringBuilder sqlJoin, StringBuilder sqlWhere, List<String> types, StringBuilder sqlNotJoin) {
+	private void sqlWithJoin(Map<String, String> request, StringBuilder sqlJoin, StringBuilder sqlWhere, List<String> types) {
 		// join rentare
 		// Search form and to of rentArea (diện tích thuê)
 		String rentAreaFrom = request.get("rentAreaFrom");
@@ -120,54 +121,54 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 	}
 	
 	
-	private void sqlNoJoin(Map<String, String> request, StringBuilder sqlNotJoin) {
+	private void sqlNoJoin(Map<String, String> request, StringBuilder sqlWhere) {
 		// search field name
 		String name = request.get("name");
 		if (!checkInputSearch.isNullStr(name)) {
-			sqlNotJoin.append(" and b.name LIKE '%" + name + "%'");
+			sqlWhere.append(" and b.name LIKE '%" + name + "%'");
 		}
 	
 		// phường, đường, hướng, hạng
 		String ward = request.get("ward");
 		if (!checkInputSearch.isNullStr(ward)) {
-			sqlNotJoin.append(" and b.ward LIKE '%" + ward + "%'");
+			sqlWhere.append(" and b.ward LIKE '%" + ward + "%'");
 		}
 		
 		String street = request.get("street");
 		if (!checkInputSearch.isNullStr(street)) {
-			sqlNotJoin.append(" and b.street LIKE '%" + street + "%'");
+			sqlWhere.append(" and b.street LIKE '%" + street + "%'");
 		}
 		
 		String direction = request.get("direction");
 		if (!checkInputSearch.isNullStr(direction)) {
-			sqlNotJoin.append(" and b.direction LIKE '%" + direction + "%'");
+			sqlWhere.append(" and b.direction LIKE '%" + direction + "%'");
 		}
 		
 		String level = request.get("level");
 		if (!checkInputSearch.isNullStr(level)) {
-			sqlNotJoin.append(" and b.level LIKE '%" + level + "%'");
+			sqlWhere.append(" and b.level LIKE '%" + level + "%'");
 		}
 		
 		// Search chính xác
 		String floorarea = request.get("floorarea");
 		if (!checkInputSearch.isNullStr(floorarea)) {
-			sqlNotJoin.append(" and b.floorarea = " + floorarea + "");
+			sqlWhere.append(" and b.floorarea = " + floorarea + "");
 		}
 		
 		// numberOfBasement
 		String numberofbasement = request.get("numberofbasement");
 		if (!checkInputSearch.isNullStr(numberofbasement)) {
-			sqlNotJoin.append(" and b.numberofbasement = " + numberofbasement + "");
+			sqlWhere.append(" and b.numberofbasement = " + numberofbasement + "");
 		}
 		
 		// Search form and to of rentprice (giá thuê from -> to)
 		String rentPriceFrom = request.get("rentPriceFrom");
 		String rentPriceTo = request.get("rentPriceTo");
 		if (!checkInputSearch.isNullStr(rentPriceFrom)) {
-			sqlNotJoin.append(" and b.rentprice <= " + rentPriceFrom + "");
+			sqlWhere.append(" and b.rentprice <= " + rentPriceFrom + "");
 		}
 		if (!checkInputSearch.isNullStr(rentPriceTo)) {
-			sqlNotJoin.append(" and b.rentprice >= " + rentPriceTo + "");
+			sqlWhere.append(" and b.rentprice >= " + rentPriceTo + "");
 		}
 	}
 

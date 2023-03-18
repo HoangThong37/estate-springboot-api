@@ -48,7 +48,7 @@ public class BuildingConverter {
 				joinString += item.getValue().toString() + "," ;
 			}
 		}
-	    if (joinString != null && joinString.charAt(joinString.length() - 1) == ',') {
+	    if (joinString != null && !joinString.isEmpty() && joinString.charAt(joinString.length() - 1) == ',') {
 	    	joinString = joinString.substring(0, joinString.length() - 1);
 	    }
 		BuildingSearchResponse response = modelMapper.map(entity, BuildingSearchResponse.class);
