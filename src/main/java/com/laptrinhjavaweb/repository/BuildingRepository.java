@@ -9,6 +9,7 @@ import com.laptrinhjavaweb.entity.BuildingEntity;
 
 public interface BuildingRepository {
     List<BuildingEntity> findBuilding(Map<String, String> buildingSearchRequest, List<String> types) throws SQLException;
+   
 }
 
 //extends JpaRepository<BuildingEntity, Long>

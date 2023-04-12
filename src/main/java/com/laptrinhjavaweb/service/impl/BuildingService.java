@@ -17,6 +17,7 @@ import com.laptrinhjavaweb.entity.RentAreaEntity;
 import com.laptrinhjavaweb.enums.BuildingTypesEnum;
 import com.laptrinhjavaweb.enums.DistrictsEnum;
 import com.laptrinhjavaweb.repository.BuildingRepository;
+import com.laptrinhjavaweb.repository.BuildingRepository2;
 import com.laptrinhjavaweb.repository.DistrictRepository;
 import com.laptrinhjavaweb.repository.RentAreaRepository;
 import com.laptrinhjavaweb.service.IBuildingService;
@@ -29,6 +30,9 @@ public class BuildingService implements IBuildingService {
 	
 	@Autowired
 	private BuildingRepository buildingRepository;
+	
+	@Autowired
+	private BuildingRepository2 buildingRepository2;
 	
 	@Autowired
 	private DistrictRepository districtRepository;
@@ -60,8 +64,29 @@ public class BuildingService implements IBuildingService {
 	public List<BuildingSearchResponse> getBuildingList(Map<String, String> fieldSearch, List<String> types) throws SQLException {
 		List<BuildingSearchResponse> responses = new ArrayList<>();
 		System.out.println("vô service rồi");
-		 // BuildingSearchRequest request = searchFieldParams(fieldSearch);
 		List<BuildingEntity> buildingEntities = buildingRepository.findBuilding(fieldSearch, types);
+		
+		for (BuildingEntity item : buildingEntities) {
+			
+			DistrictEntity districtEntity = districtRepository.findDistrictById(item.getDistrictId());
+			String districtName = districtEntity.getName();
+
+			List<RentAreaEntity> rentArea = rentAreaRepository.findRentArea(item.getRentAreaId());
+				
+			BuildingSearchResponse response = buildingConverter.convertEntityToBuildingResponse(item, districtName, rentArea);
+			responses.add(response);
+		}
+		return responses;
+	}
+
+	
+	
+	// cách 2
+    // search building by field 
+	@Override
+	public List<BuildingSearchResponse> getBuildingList2(Map<String, Object> fieldSearch, List<String> types) throws SQLException {
+		List<BuildingSearchResponse> responses = new ArrayList<>();
+		List<BuildingEntity> buildingEntities = buildingRepository2.findBuilding2(fieldSearch, types);
 		
 		for (BuildingEntity item : buildingEntities) {
 			

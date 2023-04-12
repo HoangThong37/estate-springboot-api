@@ -21,8 +21,16 @@ public class BuildingAPI {
 	private IBuildingService buildingService;
 
 	
+//	@GetMapping("/api/building")
+//	public List<BuildingSearchResponse> searchBuilding(@RequestParam(required = false) Map<String, String> fieldSearch,
+//			                                           @RequestParam(required = false) List<String> types) 
+//			                            throws SQLException {
+//		return buildingService.getBuildingList(fieldSearch, types);
+//	}
+	
+	//cách 2: sd toán tử 3 ngôi
 	@GetMapping("/api/building")
-	public List<BuildingSearchResponse> searchBuilding(@RequestParam(required = false) Map<String, String> fieldSearch,
+	public List<BuildingSearchResponse> searchBuilding2(@RequestParam(required = false) Map<String, String> fieldSearch,
 			                                           @RequestParam(required = false) List<String> types) 
 			                            throws SQLException {
 		return buildingService.getBuildingList(fieldSearch, types);
