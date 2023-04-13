@@ -9,6 +9,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.laptrinhjavaweb.builder.BuildingSearchBuilder;
 import com.laptrinhjavaweb.converter.BuildingConverter;
 import com.laptrinhjavaweb.dto.response.BuildingSearchResponse;
 import com.laptrinhjavaweb.entity.BuildingEntity;
@@ -21,6 +22,7 @@ import com.laptrinhjavaweb.repository.BuildingRepository2;
 import com.laptrinhjavaweb.repository.DistrictRepository;
 import com.laptrinhjavaweb.repository.RentAreaRepository;
 import com.laptrinhjavaweb.service.IBuildingService;
+import com.laptrinhjavaweb.util.MapUtils;
 
 @Service
 public class BuildingService implements IBuildingService {
@@ -87,19 +89,48 @@ public class BuildingService implements IBuildingService {
 	public List<BuildingSearchResponse> getBuildingList2(Map<String, Object> fieldSearch, List<String> types) throws SQLException {
 		List<BuildingSearchResponse> responses = new ArrayList<>();
 		List<BuildingEntity> buildingEntities = buildingRepository2.findBuilding2(fieldSearch, types);
-		
 		for (BuildingEntity item : buildingEntities) {
-			
 			DistrictEntity districtEntity = districtRepository.findDistrictById(item.getDistrictId());
 			String districtName = districtEntity.getName();
-			
-			// rentArea 
 			List<RentAreaEntity> rentArea = rentAreaRepository.findRentArea(item.getRentAreaId());
-				
 			BuildingSearchResponse response = buildingConverter.convertEntityToBuildingResponse(item, districtName, rentArea);
 			responses.add(response);
 		}
 		return responses;
 	}
-	
+
+	@Override
+	public List<BuildingSearchResponse> getBuildingList3(Map<String, Object> requestParams, List<String> types) throws SQLException {
+		List<BuildingSearchResponse> results = new ArrayList<>();
+		BuildingSearchBuilder buildingSearchBuilder = convertToBuildingSearchBuilder(requestParams, types);
+		List<BuildingEntity> buildingEntities = buildingRepository2.findBuilding3(buildingSearchBuilder);
+		
+		for (BuildingEntity item : buildingEntities) {
+			DistrictEntity districtEntity = districtRepository.findDistrictById(item.getDistrictId());
+			String districtName = districtEntity.getName();
+			List<RentAreaEntity> rentArea = rentAreaRepository.findRentArea(item.getRentAreaId());
+			BuildingSearchResponse response = buildingConverter.convertEntityToBuildingResponse(item, districtName, rentArea);
+			results.add(response);
+		} 
+		return results;
+	}
+
+	private BuildingSearchBuilder convertToBuildingSearchBuilder(Map<String, Object> requestParams, List<String> types) {
+		BuildingSearchBuilder result = new BuildingSearchBuilder.Builder()
+				                      .setName(MapUtils.getObject(requestParams, "name", String.class))
+				                     // .setFloorArea(MapUtils.getObject(requestParams, "floorarea", Integer.class))
+				                      .setDistrict(MapUtils.getObject(requestParams, "districtId", Integer.class))
+				                      .setStreet(MapUtils.getObject(requestParams, "street", String.class))
+				                      .setWard(MapUtils.getObject(requestParams, "ward", String.class))
+				                      .setNumberOfBasement(MapUtils.getObject(requestParams, "numberofbasement", Integer.class))
+				                      .setCostRentFrom(MapUtils.getObject(requestParams, "rentPriceFrom", Integer.class))
+				                      .setCostRentTo(MapUtils.getObject(requestParams, "rentPriceTo", Integer.class))  
+				                     .setAreaRentFrom(MapUtils.getObject(requestParams, "rentAreaFrom", Integer.class))	  
+				                     .setAreaRentTo(MapUtils.getObject(requestParams, "rentAreaTo", Integer.class))
+				                     .setStaffId(MapUtils.getObject(requestParams, "staffid", Integer.class))  
+				                     .setBuildingTypes(MapUtils.getObject(requestParams, "rentPriceTo", String[].class))
+				                     .build();
+		   return result;
+	}
+
 }

@@ -20,7 +20,7 @@ public class BuildingAPI {
 	@Autowired
 	private IBuildingService buildingService;
 
-	
+	// cách 1
 //	@GetMapping("/api/building")
 //	public List<BuildingSearchResponse> searchBuilding(@RequestParam(required = false) Map<String, String> fieldSearch,
 //			                                           @RequestParam(required = false) List<String> types) 
@@ -29,11 +29,19 @@ public class BuildingAPI {
 //	}
 	
 	//cách 2: sd toán tử 3 ngôi
+//	@GetMapping("/api/building")
+//	public List<BuildingSearchResponse> searchBuilding2(@RequestParam(required = false) Map<String, String> fieldSearch,
+//			                                            @RequestParam(required = false) List<String> types) 
+//			                            throws SQLException {
+//		//return buildingService.getBuildingList(fieldSearch, types);
+//		return buildingService.getBuildingList(fieldSearch, types);
+//	}
+	
+	//cách 3: sử dụng builder
 	@GetMapping("/api/building")
-	public List<BuildingSearchResponse> searchBuilding2(@RequestParam(required = false) Map<String, String> fieldSearch,
-			                                           @RequestParam(required = false) List<String> types) 
+	public List<BuildingSearchResponse> searchBuilding3(@RequestParam(required = false) Map<String, Object> fieldSearch,
+			                                            @RequestParam(required = false) List<String> types)
 			                            throws SQLException {
-		return buildingService.getBuildingList(fieldSearch, types);
+		return buildingService.getBuildingList3(fieldSearch, types);
 	}
-
 }

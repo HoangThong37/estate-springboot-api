@@ -13,7 +13,8 @@ public interface IBuildingService {
 	Map<String, String> getBuildingTypes();
 	
 	List<BuildingSearchResponse> getBuildingList(Map<String, String> fieldSearch, List<String> types) throws SQLException;
-	
-	
 	List<BuildingSearchResponse> getBuildingList2(Map<String, Object> fieldSearch, List<String> types) throws SQLException;
+	List<BuildingSearchResponse> getBuildingList3(Map<String, Object> fieldSearch, List<String> types) throws SQLException;
+	
+	
 }

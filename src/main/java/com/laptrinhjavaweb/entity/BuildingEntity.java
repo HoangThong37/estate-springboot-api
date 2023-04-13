@@ -1,9 +1,6 @@
 package com.laptrinhjavaweb.entity;
 
-import java.util.List;
-
 public class BuildingEntity extends BaseEntity {
-
     private String name;
     private String street;
     private String ward;

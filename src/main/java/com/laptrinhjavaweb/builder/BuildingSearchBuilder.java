@@ -3,31 +3,31 @@ package com.laptrinhjavaweb.builder;
 public class BuildingSearchBuilder {
 	
 	private String name;
-	private String district;
-	private String buildingArea;
+	private Integer district;
+	private Integer floorArea;
 	private String street;
 	private String ward;
-	private String numberOfBasement;
+	private Integer numberOfBasement;
 	private String[] buildingTypes = new String[] {};
-	private String costRentFrom;
-	private String costRentTo;
-	private String areaRentFrom;
-	private String areaRentTo;
-	private String staffId;
+	private Integer costRentFrom;
+	private Integer costRentTo;
+	private Integer areaRentFrom;
+	private Integer areaRentTo;
+	private Integer staffId;
 	
 	public String getName() {
 		return name;
 	}
 
-	public String getDistrict() {
+	public Integer getDistrict() {
 		return district;
 	}
 	
-	public String getBuildingArea() {
-		return buildingArea;
+	public Integer getFloorArea() {
+		return floorArea;
 	}
 
-	public String getNumberOfBasement() {
+	public Integer getNumberOfBasement() {
 		return numberOfBasement;
 	}
 	
@@ -43,30 +43,30 @@ public class BuildingSearchBuilder {
 		return buildingTypes;
 	}
 	
-	public String getCostRentFrom() {
+	public Integer getCostRentFrom() {
 		return costRentFrom;
 	}
 
-	public String getCostRentTo() {
+	public Integer getCostRentTo() {
 		return costRentTo;
 	}
 
-	public String getAreaRentFrom() {
+	public Integer getAreaRentFrom() {
 		return areaRentFrom;
 	}
 
-	public String getAreaRentTo() {
+	public Integer getAreaRentTo() {
 		return areaRentTo;
 	}
 	
-	public String getStaffId() {
+	public Integer getStaffId() {
 		return staffId;
 	}
 	
 	private BuildingSearchBuilder(Builder builder) {
 		this.name = builder.name;
 		this.district = builder.district;
-		this.buildingArea = builder.buildingArea;
+		this.floorArea = builder.floorArea;
 		this.numberOfBasement = builder.numberOfBasement;
 		this.street = builder.street;
 		this.ward = builder.ward;
@@ -81,34 +81,34 @@ public class BuildingSearchBuilder {
 	public static class Builder {
 
 		private String name;
-		private String district;
+		private Integer district;
 		private String street;
 		private String ward;
-		private String buildingArea;
-		private String numberOfBasement;
+		private Integer floorArea;
+		private Integer numberOfBasement;
 		private String[] buildingTypes = new String[] {};
-		private String costRentFrom;
-		private String costRentTo;
-		private String areaRentFrom;
-		private String areaRentTo;
-		private String staffId;
+		private Integer costRentFrom;
+		private Integer costRentTo;
+		private Integer areaRentFrom;
+		private Integer areaRentTo;
+		private Integer staffId;
 		
 		public Builder setName(String name) {
 			this.name = name;
 			return this;
 		}
 		
-		public Builder setDistrict(String district) {
+		public Builder setDistrict(Integer district) {
 			this.district = district;
 			return this;
 		}
 
-		public Builder setBuildingArea(String buildingArea) {
-			this.buildingArea = buildingArea;
+		public Builder setFloorArea(Integer floorArea) {
+			this.floorArea = floorArea;
 			return this;
 		}
 
-		public Builder setNumberOfBasement(String numberOfBasement) {
+		public Builder setNumberOfBasement(Integer numberOfBasement) {
 			this.numberOfBasement = numberOfBasement;
 			return this;
 		}
@@ -128,27 +128,27 @@ public class BuildingSearchBuilder {
 			return this;
 		}
 
-		public Builder setCostRentFrom(String costRentFrom) {
+		public Builder setCostRentFrom(Integer costRentFrom) {
 			this.costRentFrom = costRentFrom;
 			return this;
 		}
 
-		public Builder setCostRentTo(String costRentTo) {
+		public Builder setCostRentTo(Integer costRentTo) {
 			this.costRentTo = costRentTo;
 			return this;
 		}
 
-		public Builder setAreaRentFrom(String areaRentFrom) {
+		public Builder setAreaRentFrom(Integer areaRentFrom) {
 			this.areaRentFrom = areaRentFrom;
 			return this;
 		}
 
-		public Builder setAreaRentTo(String areaRentTo) {
+		public Builder setAreaRentTo(Integer areaRentTo) {
 			this.areaRentTo = areaRentTo;
 			return this;
 		}
 		
-		public Builder setStaffId(String staffId) {
+		public Builder setStaffId(Integer staffId) {
 			this.staffId = staffId;
 			return this;
 		}
