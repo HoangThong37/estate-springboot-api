@@ -46,7 +46,7 @@ public class BuildingService implements IBuildingService {
 	public Map<String, String> getDistricts() {
 		Map<String, String> districts = new HashMap<>();
 		for (DistrictsEnum item: DistrictsEnum.values()) {
-			districts.put(item.toString(), item.getDistrictValue());
+			districts.put(item.toString(), item.getDistrictValue());// item ở đây là : QUAN_1 / item.getDistrictValue() : giá trị của Q_1 là quận 1
 		}
 		return districts;
 	}
@@ -99,6 +99,9 @@ public class BuildingService implements IBuildingService {
 		return responses;
 	}
 
+	
+	
+	// cách buider
 	@Override
 	public List<BuildingSearchResponse> getBuildingList3(Map<String, Object> requestParams, List<String> types) throws SQLException {
 		List<BuildingSearchResponse> results = new ArrayList<>();
@@ -118,7 +121,7 @@ public class BuildingService implements IBuildingService {
 	private BuildingSearchBuilder convertToBuildingSearchBuilder(Map<String, Object> requestParams, List<String> types) {
 		BuildingSearchBuilder result = new BuildingSearchBuilder.Builder()
 				                      .setName(MapUtils.getObject(requestParams, "name", String.class))
-				                     // .setFloorArea(MapUtils.getObject(requestParams, "floorarea", Integer.class))
+				                      .setFloorArea(MapUtils.getObject(requestParams, "floorarea", Integer.class))
 				                      .setDistrict(MapUtils.getObject(requestParams, "districtId", Integer.class))
 				                      .setStreet(MapUtils.getObject(requestParams, "street", String.class))
 				                      .setWard(MapUtils.getObject(requestParams, "ward", String.class))

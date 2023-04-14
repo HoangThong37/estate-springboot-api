@@ -6,6 +6,7 @@ public enum DistrictsEnum {
     QUAN_2("Quận 2"),  
     QUAN_3("Quận 3"),
     QUAN_4("Quận 4");
+	
     private final String districtValue;
 
     DistrictsEnum(String districtValue) {

@@ -1,7 +1,10 @@
 package com.laptrinhjavaweb.repository.impl;
 
 import java.lang.reflect.Field;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Repository;
 import com.laptrinhjavaweb.builder.BuildingSearchBuilder;
 import com.laptrinhjavaweb.entity.BuildingEntity;
 import com.laptrinhjavaweb.repository.BuildingRepository2;
+import com.laptrinhjavaweb.util.ConnectDB;
 import com.laptrinhjavaweb.util.MapUtils;
 import com.laptrinhjavaweb.util.checkInputSearch;
 
@@ -40,10 +44,10 @@ public class BuildingRepositoryImpl2 implements BuildingRepository2 {
 		Query query = entityManager.createNativeQuery(querry.toString(), BuildingEntity.class);
 		return query.getResultList();
 	}
-													
+
 	private void sqlNoJoin2(Map<String, Object> request, StringBuilder sqlWhere) {
 		String name = MapUtils.getObject(request, "name", String.class);
-		if (!checkInputSearch.isNullStr(name)) {																	
+		if (!checkInputSearch.isNullStr(name)) {
 			sqlWhere.append(" and b.name LIKE '%" + name + "%'");
 		}
 
@@ -141,25 +145,76 @@ public class BuildingRepositoryImpl2 implements BuildingRepository2 {
 			sqlWhere.append(" and u.id = " + staff + " ");
 		}
 	}
-	
 
 	// cách 3: sử dụng builder - common search
+	private Connection conn = null;
+	private Statement stmt;
+	private ResultSet rs;
+
 	@Override
-	public List<BuildingEntity> findBuilding3(BuildingSearchBuilder builder) {
-		StringBuilder sql = new StringBuilder("SELECT * FROM building as b");
-		buidSqlSpecial(builder, sql);
-		sql.append(" where 1=1 ");
-		buidSqlCommonUsingBuider(builder, sql);
-		sql.append(" GROUP BY b.id");
+	public List<BuildingEntity> findBuilding3(BuildingSearchBuilder builder) throws SQLException {
+		List<BuildingEntity> buildingEntities = new ArrayList<>();
+		try {
+			conn = ConnectDB.getConnection(); // connect db
+			conn.setAutoCommit(false);
+			if (conn != null) {
+				stmt = conn.createStatement();
 
-		Query query = entityManager.createNativeQuery(sql.toString(), BuildingEntity.class);
- 		return query.getResultList();
+				StringBuilder sql = new StringBuilder("SELECT * FROM building as b");
+				buidSqlSpecial(builder, sql);
+				sql.append(" where 1=1 ");
+				buidSqlCommonUsingBuider(builder, sql);
+				sql.append(" GROUP BY b.id");
 
+				rs = stmt.executeQuery(sql.toString());
+
+				while (rs.next()) { // Xử lý kết quả trả về
+					BuildingEntity buildingEntity = new BuildingEntity();
+					buildingEntity.setId(rs.getLong("id"));
+					buildingEntity.setName(rs.getString("name"));
+					buildingEntity.setStreet(rs.getString("street"));
+					buildingEntity.setWard(rs.getString("ward"));
+					buildingEntity.setDistrictId(rs.getLong("districtid"));
+					buildingEntity.setStructure(rs.getString("structure"));
+					buildingEntity.setNumberOfBasement(rs.getInt("numberofbasement"));
+					buildingEntity.setFloorArea(rs.getInt("floorarea")); // dtich sàn
+					buildingEntity.setRentPrice(rs.getInt("rentprice"));
+					buildingEntity.setRentPriceDescription(rs.getString("rentpricedescription"));
+					buildingEntity.setServiceFee(rs.getString("servicefee"));
+					// buildingEntity.setRentAreaId(rs.getInt("value"));
+
+					buildingEntities.add(buildingEntity);
+				}
+			}
+			conn.commit();
+		} catch (Exception e) {
+			conn.rollback();
+			System.out.println("Error jdbc building");
+			e.printStackTrace();
+
+		} finally {
+			conn.close();
+			rs.close();
+			stmt.close();
+		}
+		return buildingEntities;
 	}
+//	@Override
+//	public List<BuildingEntity> findBuilding3(BuildingSearchBuilder builder) {
+//		StringBuilder sql = new StringBuilder("SELECT * FROM building as b");
+//		buidSqlSpecial(builder, sql);
+//		sql.append(" where 1=1 ");
+//		buidSqlCommonUsingBuider(builder, sql);
+//		sql.append(" GROUP BY b.id");
+//
+//		Query query = entityManager.createNativeQuery(sql.toString(), BuildingEntity.class);
+// 		return query.getResultList(); // nó trả ra đúng r
+////
+//	}
 
 	// sử dụng java reflection
 	private StringBuilder buidSqlCommonUsingBuider(BuildingSearchBuilder builder, StringBuilder sql) {
-		//StringBuilder sql = new StringBuilder("");
+		// StringBuilder sql = new StringBuilder("");
 		try {
 			Field fields[] = BuildingSearchBuilder.class.getDeclaredFields();
 			for (Field field : fields) {
@@ -184,11 +239,11 @@ public class BuildingRepositoryImpl2 implements BuildingRepository2 {
 	}
 
 	private String buidSqlSpecial(BuildingSearchBuilder builder, StringBuilder sql) {
-        Integer rentAreaFrom = builder.getAreaRentFrom();
-        Integer rentAreaTo = builder.getAreaRentTo();
-        Integer rentPriceFrom = builder.getCostRentFrom();
-        Integer rentPriceTo = builder.getCostRentTo();
-        
+		Integer rentAreaFrom = builder.getAreaRentFrom();
+		Integer rentAreaTo = builder.getAreaRentTo();
+		Integer rentPriceFrom = builder.getCostRentFrom();
+		Integer rentPriceTo = builder.getCostRentTo();
+
 		if (!checkInputSearch.isNullInt(rentPriceFrom)) {
 			sql.append(" and b.rentprice <= " + rentPriceFrom + "");
 		}
@@ -212,23 +267,22 @@ public class BuildingRepositoryImpl2 implements BuildingRepository2 {
 		if (staff != null) {
 			sql.append("  inner join assignmentbuilding as ab on b.id = ab.buildingid ");
 		}
-		
+
 		// districtId
 		Integer districtId = builder.getDistrict();
 		if (!checkInputSearch.isNullInt(districtId)) {
 			sql.append(" inner join district as d on b.districtid = d.id ");
 			sql.append(" and d.code = '" + districtId + "'");
 		}
-		
+
 		String[] types = builder.getBuildingTypes();
 		if (types != null && types.length > 0) {
 			List<String> buildingTypes = new ArrayList<>();
 			sql.append(" and (");
-			 buildingTypes.stream().map(item -> " rt.code = '" + item + "'").collect(Collectors.joining(" or "));
-     		sql.append(buildingTypes);
+			buildingTypes.stream().map(item -> " rt.code = '" + item + "'").collect(Collectors.joining(" or "));
+			sql.append(buildingTypes);
 			sql.append(")");
 		}
 		return sql.toString();
 	}
-
 }

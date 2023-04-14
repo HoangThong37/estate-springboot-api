@@ -11,6 +11,6 @@ public interface BuildingRepository2 {
 	List<BuildingEntity> findBuilding2(Map<String, Object> buildingSearchRequest, List<String> types) throws SQLException;
 	
 	// sử dụng buider
-     List<BuildingEntity> findBuilding3(BuildingSearchBuilder builder);
+     List<BuildingEntity> findBuilding3(BuildingSearchBuilder builder) throws SQLException;
 
 }
