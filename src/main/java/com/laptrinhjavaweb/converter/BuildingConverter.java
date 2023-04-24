@@ -1,6 +1,5 @@
 package com.laptrinhjavaweb.converter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -10,9 +9,8 @@ import org.springframework.stereotype.Component;
 import com.laptrinhjavaweb.dto.BuildingDTO;
 import com.laptrinhjavaweb.dto.response.BuildingSearchResponse;
 import com.laptrinhjavaweb.entity.BuildingEntity;
+import com.laptrinhjavaweb.entity.BuildingEntity1;
 import com.laptrinhjavaweb.entity.RentAreaEntity;
-
-import antlr.StringUtils;
 
 @Component
 public class BuildingConverter {
@@ -59,4 +57,28 @@ public class BuildingConverter {
 		return response;
 	}
 
+	
+	
+	
+	public BuildingSearchResponse convertEntityToBuildingResponse1(BuildingEntity1 entity, String districtName) {
+		String address = entity.getStreet() + " - " + entity.getWard() + " - " +  districtName;
+         
+		String joinString = "";
+		//List<Integer> joinString = new ArrayList<>();
+		//StringBuilder list = new StringBuilder();
+//		for (RentAreaEntity item : rentArea) {
+//			if (item.getBuildingid() == entity.getId()) {
+//				joinString += item.getValue().toString() + "," ;
+//			}
+//		}
+//	    if (joinString != null && !joinString.isEmpty() && joinString.charAt(joinString.length() - 1) == ',') {
+//	    	joinString = joinString.substring(0, joinString.length() - 1);
+//	    }
+		BuildingSearchResponse response = modelMapper.map(entity, BuildingSearchResponse.class);
+		response.setAddress(address);
+	    response.setRentArea(joinString);
+		//response.setRentArea(list);
+		
+		return response;
+	}
 }

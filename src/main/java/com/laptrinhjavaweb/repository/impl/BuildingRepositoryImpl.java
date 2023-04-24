@@ -1,5 +1,4 @@
 package com.laptrinhjavaweb.repository.impl;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,8 +12,6 @@ import org.springframework.stereotype.Repository;
 import com.laptrinhjavaweb.entity.BuildingEntity;
 import com.laptrinhjavaweb.repository.BuildingRepository;
 import com.laptrinhjavaweb.util.ConnectDB;
-import com.laptrinhjavaweb.util.MapUtils;
-import com.laptrinhjavaweb.util.NumberUtils;
 import com.laptrinhjavaweb.util.checkInputSearch;
 
 @Repository
@@ -35,8 +32,7 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 				StringBuilder querry = new StringBuilder("SELECT * FROM building as b ");
 				StringBuilder sqlJoin = new StringBuilder();
 				StringBuilder sqlWhere = new StringBuilder(" where 1=1 ");
-				// StringBuilder sqlNotJoin = new StringBuilder();
-
+		
 				sqlWithJoin(request, sqlJoin, sqlWhere, types); // join table
 				sqlNoJoin(request, sqlWhere);
 
@@ -178,6 +174,4 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 			sqlWhere.append(" and b.rentprice >= " + rentPriceTo + "");
 		}
 	}
-
-
 }

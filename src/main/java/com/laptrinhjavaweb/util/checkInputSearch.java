@@ -16,5 +16,13 @@ public class checkInputSearch {
 		}
 		return false;
 	}
+	
+//	public static boolean isNullLong(Long str) {
+//		if (str == null || str) {
+//			return true;
+//		}
+//		return false;
+//	}
+	
 
 }

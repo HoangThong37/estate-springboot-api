@@ -13,6 +13,15 @@ public class ValidateUtil {
 		} 
 		return object.toString();
 	}
+	
+    public static boolean isValid(Object obj) {
+        if (obj == null) {
+            return false;
+        } else if (!obj.toString().equals(SystemConstant.STRING_EMPTY)) {
+            return true;
+        }
+         return false;
+     }
  
 
 }

@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 public class BuildingSearchResponse {
-    private long id;
+    private Long id;
     private String name;
     private String address;
     private String floorArea;       // diện tích sàn
@@ -17,8 +17,9 @@ public class BuildingSearchResponse {
     private Date modifiedDate;
     private String createdBy;
     private String modifiedBy;
-	 private String rentArea; // đẩy ra dạng value1,value2
-    //private StringBuilder rentArea;
+    private String rentArea; // đẩy ra dạng value1,value2
+    
+	 
 
 	public long getId() {
 		return id;

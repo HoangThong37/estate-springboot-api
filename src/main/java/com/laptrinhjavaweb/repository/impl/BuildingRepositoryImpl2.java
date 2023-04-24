@@ -1,6 +1,5 @@
 package com.laptrinhjavaweb.repository.impl;
 
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,13 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-
 import org.springframework.stereotype.Repository;
 
-import com.laptrinhjavaweb.builder.BuildingSearchBuilder;
 import com.laptrinhjavaweb.entity.BuildingEntity;
 import com.laptrinhjavaweb.repository.BuildingRepository2;
 import com.laptrinhjavaweb.util.ConnectDB;
@@ -25,24 +19,63 @@ import com.laptrinhjavaweb.util.checkInputSearch;
 
 @Repository
 public class BuildingRepositoryImpl2 implements BuildingRepository2 {
-
-	@PersistenceContext
-	private EntityManager entityManager;
+	
+	private Connection conn = null;
+	private Statement stmt;
+	private ResultSet rs;
 
 	@Override
 	public List<BuildingEntity> findBuilding2(Map<String, Object> request, List<String> types) throws SQLException {
-		// cách 2: sử dụng generic viết hàm chung
-		StringBuilder querry = new StringBuilder("SELECT * FROM building as b ");
-		StringBuilder sqlJoin = new StringBuilder();
-		StringBuilder sqlWhere = new StringBuilder(" where 1=1 ");
+//		// cách 2: sử dụng generic viết hàm chung
+		
+		List<BuildingEntity> buildingEntities = new ArrayList<>();
+		try {
+			conn = ConnectDB.getConnection(); // connect db
+			conn.setAutoCommit(false);
+			if (conn != null) {
+				stmt = conn.createStatement();
+				StringBuilder querry = new StringBuilder("SELECT * FROM building as b ");
+				StringBuilder sqlJoin = new StringBuilder();
+				StringBuilder sqlWhere = new StringBuilder(" where 1=1 ");
+				// StringBuilder sqlNotJoin = new StringBuilder();
 
-		sqlWithJoin2(request, sqlJoin, sqlWhere, types); // join table
-		sqlNoJoin2(request, sqlWhere);
+				sqlWithJoin2(request, sqlJoin, sqlWhere, types); // join table
+				sqlNoJoin2(request, sqlWhere);
 
-		querry.append(sqlJoin).append(sqlWhere).append(" GROUP BY b.id");
+				querry.append(sqlJoin).append(sqlWhere).append(" GROUP BY b.id");
 
-		Query query = entityManager.createNativeQuery(querry.toString(), BuildingEntity.class);
-		return query.getResultList();
+				rs = stmt.executeQuery(querry.toString());
+				// rs = stmt.executeQuery(querrySearch(buildingSearchRequest)); // querry search
+				while (rs.next()) { // Xử lý kết quả trả về
+					BuildingEntity buildingEntity = new BuildingEntity();
+					buildingEntity.setId(rs.getLong("id"));
+					buildingEntity.setName(rs.getString("name"));
+					buildingEntity.setStreet(rs.getString("street"));
+					buildingEntity.setWard(rs.getString("ward"));
+					buildingEntity.setDistrictId(rs.getLong("districtid"));
+					buildingEntity.setStructure(rs.getString("structure"));
+					buildingEntity.setNumberOfBasement(rs.getInt("numberofbasement"));
+					buildingEntity.setFloorArea(rs.getInt("floorarea")); // dtich sàn
+					buildingEntity.setRentPrice(rs.getInt("rentprice"));
+					buildingEntity.setRentPriceDescription(rs.getString("rentpricedescription"));
+					buildingEntity.setServiceFee(rs.getString("servicefee"));
+//				    buildingEntity.setRentAreaId(rs.getInt("value"));
+
+					buildingEntities.add(buildingEntity);
+				}
+			}
+			conn.commit();
+		} catch (Exception e) {
+			conn.rollback();
+			System.out.println("Error jdbc building");
+			e.printStackTrace();
+
+		} finally {
+			conn.close();
+			rs.close();
+			stmt.close();
+		}
+		return buildingEntities;
 	}
 
 	private void sqlNoJoin2(Map<String, Object> request, StringBuilder sqlWhere) {
@@ -81,14 +114,14 @@ public class BuildingRepositoryImpl2 implements BuildingRepository2 {
 			sqlWhere.append(" and b.numberofbasement = " + numberofbasement + "");
 		}
 
-		Integer rentPriceFrom = MapUtils.getObject(request, "rentPriceFrom", Integer.class); //
+		Integer rentPriceFrom = MapUtils.getObject(request, "rentpricefrom", Integer.class); //
 		if (!checkInputSearch.isNullInt(rentPriceFrom)) {
-			sqlWhere.append(" and b.rentprice <= " + rentPriceFrom + "");
+			sqlWhere.append(" and b.rentprice >= " + rentPriceFrom + "");
 		}
 
-		Integer rentPriceTo = MapUtils.getObject(request, "rentPriceTo", Integer.class); //
+		Integer rentPriceTo = MapUtils.getObject(request, "rentpriceto", Integer.class); //
 		if (!checkInputSearch.isNullInt(rentPriceTo)) {
-			sqlWhere.append(" and b.rentprice >= " + rentPriceTo + "");
+			sqlWhere.append(" and b.rentprice <= " + rentPriceTo + "");
 		}
 	}
 
@@ -96,25 +129,25 @@ public class BuildingRepositoryImpl2 implements BuildingRepository2 {
 	private void sqlWithJoin2(Map<String, Object> request, StringBuilder sqlJoin, StringBuilder sqlWhere,
 			List<String> types) {
 		// join rentare (diện tích thuê)
-		String rentAreaFrom = MapUtils.getObject(request, "rentAreaFrom", String.class);
-		String rentAreaTo = MapUtils.getObject(request, "rentAreaTo", String.class);
+		String rentAreaFrom = MapUtils.getObject(request, "rentareafrom", String.class);
+		String rentAreaTo = MapUtils.getObject(request, "rentareato", String.class);
 
 		if (!checkInputSearch.isNullStr(rentAreaFrom) || !checkInputSearch.isNullStr(rentAreaTo)) {
-			sqlJoin.append(" and EXISTS (SELECT * FROM rentarea ra WHERE ra.buildingid = b.id and ");
+			sqlWhere.append(" AND EXISTS (SELECT * FROM rentarea ra WHERE ra.buildingid = b.id ");
 			if (!checkInputSearch.isNullStr(rentAreaFrom)) {
 				sqlWhere.append(" and ra.value >= " + rentAreaFrom + "");
 			}
 			if (!checkInputSearch.isNullStr(rentAreaTo)) {
 				sqlWhere.append(" and ra.value <= " + rentAreaTo + "");
 			}
-			sqlJoin.append(")");
+			sqlWhere.append(")");
 		}
 
 		// districtId
-		Integer districtId = MapUtils.getObject(request, "districtId", Integer.class);
-		if (!checkInputSearch.isNullInt(districtId)) {
+		Long districtId = MapUtils.getObject(request, "districtid", Long.class);
+		if (districtId != null) {
 			sqlJoin.append(" inner join district as d on b.districtid = d.id ");
-			sqlWhere.append(" and d.code = '" + districtId + "'");
+			sqlWhere.append(" and d.id = '" + districtId + "'");
 		}
 
 		// type building -> list
@@ -142,147 +175,7 @@ public class BuildingRepositoryImpl2 implements BuildingRepository2 {
 		if (!checkInputSearch.isNullInt(staff)) {
 			sqlJoin.append(
 					" inner join assignmentbuilding ab on b.id = ab.buildingid inner join user as u  on ab.staffid = u.id ");
-			sqlWhere.append(" and u.id = " + staff + " ");
+			sqlWhere.append(" and u.id = '" + staff + "'");
 		}
-	}
-
-	// cách 3: sử dụng builder - common search
-	private Connection conn = null;
-	private Statement stmt;
-	private ResultSet rs;
-
-	@Override
-	public List<BuildingEntity> findBuilding3(BuildingSearchBuilder builder) throws SQLException {
-		List<BuildingEntity> buildingEntities = new ArrayList<>();
-		try {
-			conn = ConnectDB.getConnection(); // connect db
-			conn.setAutoCommit(false);
-			if (conn != null) {
-				stmt = conn.createStatement();
-
-				StringBuilder sql = new StringBuilder("SELECT * FROM building as b");
-				buidSqlSpecial(builder, sql);
-				sql.append(" where 1=1 ");
-				buidSqlCommonUsingBuider(builder, sql);
-				sql.append(" GROUP BY b.id");
-
-				rs = stmt.executeQuery(sql.toString());
-
-				while (rs.next()) { // Xử lý kết quả trả về
-					BuildingEntity buildingEntity = new BuildingEntity();
-					buildingEntity.setId(rs.getLong("id"));
-					buildingEntity.setName(rs.getString("name"));
-					buildingEntity.setStreet(rs.getString("street"));
-					buildingEntity.setWard(rs.getString("ward"));
-					buildingEntity.setDistrictId(rs.getLong("districtid"));
-					buildingEntity.setStructure(rs.getString("structure"));
-					buildingEntity.setNumberOfBasement(rs.getInt("numberofbasement"));
-					buildingEntity.setFloorArea(rs.getInt("floorarea")); // dtich sàn
-					buildingEntity.setRentPrice(rs.getInt("rentprice"));
-					buildingEntity.setRentPriceDescription(rs.getString("rentpricedescription"));
-					buildingEntity.setServiceFee(rs.getString("servicefee"));
-					// buildingEntity.setRentAreaId(rs.getInt("value"));
-
-					buildingEntities.add(buildingEntity);
-				}
-			}
-			conn.commit();
-		} catch (Exception e) {
-			conn.rollback();
-			System.out.println("Error jdbc building");
-			e.printStackTrace();
-
-		} finally {
-			conn.close();
-			rs.close();
-			stmt.close();
-		}
-		return buildingEntities;
-	}
-//	@Override
-//	public List<BuildingEntity> findBuilding3(BuildingSearchBuilder builder) {
-//		StringBuilder sql = new StringBuilder("SELECT * FROM building as b");
-//		buidSqlSpecial(builder, sql);
-//		sql.append(" where 1=1 ");
-//		buidSqlCommonUsingBuider(builder, sql);
-//		sql.append(" GROUP BY b.id");
-//
-//		Query query = entityManager.createNativeQuery(sql.toString(), BuildingEntity.class);
-// 		return query.getResultList(); // nó trả ra đúng r
-////
-//	}
-
-	// sử dụng java reflection
-	private StringBuilder buidSqlCommonUsingBuider(BuildingSearchBuilder builder, StringBuilder sql) {
-		// StringBuilder sql = new StringBuilder("");
-		try {
-			Field fields[] = BuildingSearchBuilder.class.getDeclaredFields();
-			for (Field field : fields) {
-				field.setAccessible(true);
-				String fieldName = field.getName();
-				if (!fieldName.equals("types") && !fieldName.startsWith("rentarea") && !fieldName.equals("districtId")
-						&& !fieldName.equals("staffid") && !fieldName.startsWith("costrent")) {
-
-					Object objectValue = field.get(builder);
-					if (objectValue != null) {
-						if (field.getType().getName().equals("java.lang.String")) { // tìm kiếm theo like
-							sql.append(" and b." + fieldName.toLowerCase() + " like '%" + objectValue + "%'");
-						} else if (field.getType().getName().equals("java.lang.Integer")) { // tìm kiếm chính xác
-							sql.append(" and b." + fieldName.toLowerCase() + " = " + objectValue + "");
-						}
-					}
-				}
-			}
-		} catch (Exception e) {
-		}
-		return sql;
-	}
-
-	private String buidSqlSpecial(BuildingSearchBuilder builder, StringBuilder sql) {
-		Integer rentAreaFrom = builder.getAreaRentFrom();
-		Integer rentAreaTo = builder.getAreaRentTo();
-		Integer rentPriceFrom = builder.getCostRentFrom();
-		Integer rentPriceTo = builder.getCostRentTo();
-
-		if (!checkInputSearch.isNullInt(rentPriceFrom)) {
-			sql.append(" and b.rentprice <= " + rentPriceFrom + "");
-		}
-		if (!checkInputSearch.isNullInt(rentPriceTo)) {
-			sql.append(" and b.rentprice >= " + rentPriceTo + "");
-		}
-
-		// rentarea
-		if (!checkInputSearch.isNullInt(rentAreaFrom) || !checkInputSearch.isNullInt(rentAreaTo)) {
-			sql.append(" and EXISTS (SELECT * FROM rentarea ra WHERE ra.buildingid = b.id and ");
-			if (!checkInputSearch.isNullInt(rentAreaFrom)) {
-				sql.append(" and ra.value >= " + rentAreaFrom + "");
-			}
-			if (!checkInputSearch.isNullInt(rentAreaTo)) {
-				sql.append(" and ra.value <= " + rentAreaTo + "");
-			}
-			sql.append(")");
-		}
-
-		Integer staff = builder.getStaffId();
-		if (staff != null) {
-			sql.append("  inner join assignmentbuilding as ab on b.id = ab.buildingid ");
-		}
-
-		// districtId
-		Integer districtId = builder.getDistrict();
-		if (!checkInputSearch.isNullInt(districtId)) {
-			sql.append(" inner join district as d on b.districtid = d.id ");
-			sql.append(" and d.code = '" + districtId + "'");
-		}
-
-		String[] types = builder.getBuildingTypes();
-		if (types != null && types.length > 0) {
-			List<String> buildingTypes = new ArrayList<>();
-			sql.append(" and (");
-			buildingTypes.stream().map(item -> " rt.code = '" + item + "'").collect(Collectors.joining(" or "));
-			sql.append(buildingTypes);
-			sql.append(")");
-		}
-		return sql.toString();
-	}
+	}	
 }
