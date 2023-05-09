@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.laptrinhjavaweb.dto.BuildingDTO;
 import com.laptrinhjavaweb.dto.request.BuildingDeleteRequest;
 import com.laptrinhjavaweb.dto.response.BuildingSearchResponse;
+import com.laptrinhjavaweb.dto.response.BuildingTypesResponse;
 import com.laptrinhjavaweb.service.IBuildingService;
+import com.laptrinhjavaweb.service.IBuildingTypeService;
 
 import javassist.NotFoundException;
 
@@ -29,6 +31,11 @@ public class BuildingAPI {
 	@Autowired
 	private IBuildingService buildingService;
 
+
+	@Autowired
+	private IBuildingTypeService buildingTypeService;
+	
+	
 	@GetMapping("/api/building")
     public List<BuildingSearchResponse> searchBuilding(@RequestParam(required = false) Map<String, Object> fieldSearch,
             @RequestParam(required = false) List<String> types) throws SQLException {
@@ -53,6 +60,12 @@ public class BuildingAPI {
         buildingService.removeBuilding(buildingDeleteRequest);
         return buildingDeleteRequest;
     }
+    
+    @PostMapping("/api/building/test")
+    public List<BuildingTypesResponse> createTypes(@RequestBody(required = false) BuildingDTO buildingDTO) {
+        return buildingTypeService.getAllByBuilding(buildingDTO);
+    }
+   
     
     // update building
 //    @PutMapping("/api/building")
