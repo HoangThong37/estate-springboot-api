@@ -10,5 +10,12 @@ public class ValidateUtils {
         }
         return false;
     }
-
+    
+    public static int parseInteger(String input) {
+        if (input != null) {
+            return Integer.parseInt(input);
+        } else {
+            return Integer.valueOf(input);
+        }
+    }
 }

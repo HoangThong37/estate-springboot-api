@@ -1,13 +1,14 @@
-package com.laptrinhjavaweb.repository.impl;
+package com.laptrinhjavaweb.service.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
 
 import com.laptrinhjavaweb.dto.BuildingDTO;
 import com.laptrinhjavaweb.dto.response.BuildingTypesResponse;
 import com.laptrinhjavaweb.enums.BuildingTypesEnum;
 import com.laptrinhjavaweb.service.IBuildingTypeService;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class BuildingTypeServiceImpl implements IBuildingTypeService {
@@ -33,7 +34,7 @@ public class BuildingTypeServiceImpl implements IBuildingTypeService {
             types.setName(item.getBuildingTypeValue());
             if (buildingDTO.getTypes() != null) {
                 for (String check : buildingDTO.getTypes()) {
-                    if (check.equals(item.name())) { // ktra xem có tòa nhà chưa
+                    if (check.equals(item.name())) { // check xem TANG_TRET equal TANG_TRET ko
                         types.setChecked("checked");
                     }
                 }

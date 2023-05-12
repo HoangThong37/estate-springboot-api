@@ -78,10 +78,12 @@ public class BuildingService implements IBuildingService {
 
 		@Override
 		@Transactional
-		public BuildingDTO save(BuildingDTO buildingDTO) {
-	        BuildingEntity buildingEntity = buildingConverter.convertToEntity(buildingDTO);
+		public BuildingDTO createBuilding(BuildingDTO buildingDTO) {
+	        BuildingEntity buildingEntity = buildingConverter.convertToEntityCustom(buildingDTO);
+	        
+	        BuildingDTO buildingDTOAfter = buildingConverter.convertToDTOCustom(building.save(buildingEntity));
 
-			return buildingConverter.convertToDTO(building.save(buildingEntity));
+			return buildingDTOAfter;
 	    }
 
 //		@Override
@@ -112,23 +114,42 @@ public class BuildingService implements IBuildingService {
 			}
 			
 		}
-		
+
 //		@Override
-//		@Transactional
-//		public BuildingDTO updateBuilding(BuildingDTO buildingDTO) {
-//			boolean idUpdateBuilding = (buildingDTO.getId() != null);
-//			try {
-//				if (idUpdateBuilding == true) {
-//					BuildingEntity buildingEntity = building.findById(buildingDTO.getId());
-//					BuildingEntity buildingEntityAfterSave = building.save(buildingEntity);
-//
-//					buildingConverter.convertToDTO(buildingEntityAfterSave);
-//				}
-//				return null;
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//				System.out.println("Error building update in service");
-//				return null;
-//			}
+//		public BuildingDTO findBuildingById(Long id) {
+//			// TODO Auto-generated method stub
+//			return null;
 //		}
+		
+		@Override
+		public BuildingDTO findBuildingById(Long id) {
+	        if (id != null) {
+	           // BuildingEntity buildingEntity = building.findById(id);
+	           // BuildingDTO buildingDTO = buildingConverter.convertToDTO(buildingEntity);
+	           // return buildingDTO;
+	        }
+	        return null;
+	    }
+
+		@Override
+		@Transactional
+		public BuildingDTO updateBuilding(BuildingDTO buildingDTO) {
+			try {
+				if (buildingDTO.getId() != null) {
+					BuildingEntity buildingEntity = buildingConverter.convertToEntityCustom(buildingDTO); // trả ra cho dto
+	                System.out.println("in ra type toa nha truoc khi convert to dto : " + buildingEntity.getTypes());
+	                System.out.println("in ra getName toa nha truoc khi convert to dto : " + buildingEntity.getName());
+	                System.out.println("in ra getDistrict toa nha truoc khi convert to dto : " + buildingEntity.getDistrict());
+	                System.out.println("in ra getStreet toa nha truoc khi convert to dto : " + buildingEntity.getStreet());
+
+					BuildingDTO buildingDTOAfter = buildingConverter.convertToDTOCustom(buildingEntity);
+					return buildingDTOAfter;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.out.println("Error building update in service");
+			}
+	       return null;
+		}
+
 }

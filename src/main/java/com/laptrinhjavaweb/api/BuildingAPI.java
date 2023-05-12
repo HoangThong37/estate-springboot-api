@@ -19,8 +19,10 @@ import com.laptrinhjavaweb.dto.BuildingDTO;
 import com.laptrinhjavaweb.dto.request.BuildingDeleteRequest;
 import com.laptrinhjavaweb.dto.response.BuildingSearchResponse;
 import com.laptrinhjavaweb.dto.response.BuildingTypesResponse;
+import com.laptrinhjavaweb.dto.response.StaffResponseDTO;
 import com.laptrinhjavaweb.service.IBuildingService;
 import com.laptrinhjavaweb.service.IBuildingTypeService;
+import com.laptrinhjavaweb.service.IUserService;
 
 import javassist.NotFoundException;
 
@@ -30,7 +32,9 @@ public class BuildingAPI {
 	
 	@Autowired
 	private IBuildingService buildingService;
-
+	
+    @Autowired
+    private IUserService userService;
 
 	@Autowired
 	private IBuildingTypeService buildingTypeService;
@@ -44,7 +48,7 @@ public class BuildingAPI {
 	
     @PostMapping("/api/building")
     public BuildingDTO createBuilding(@RequestBody(required = false) BuildingDTO buildingDTO) {
-        return buildingService.save(buildingDTO);
+        return buildingService.createBuilding(buildingDTO);
     }
     
     // delete one id
@@ -67,11 +71,25 @@ public class BuildingAPI {
     }
    
     
+    // api load satff
+    @GetMapping("/api/building/{id}/staff")
+    public List<StaffResponseDTO> loadStaffByBuilding(@PathVariable("id") Long id) {
+        return userService.finAllStaffByBuilding(id);
+    }
+    
+    
+    // api get loại tòa nhà
+    @GetMapping("/api/building/type/{id}")
+    public List<BuildingTypesResponse> findTypes(@PathVariable("id") Long id) {
+       // return buildingTypeService.getAllByBuilding(buildingSer);
+    	return null;
+    }
+    
     // update building
-//    @PutMapping("/api/building")
-//    public BuildingDTO updateBuilding(@RequestBody(required = false) BuildingDTO buildingDTO) {
-//        buildingService.updateBuilding(buildingDTO);
-//
-//        return buildingDTO;
-//    }
+    @PutMapping("/api/building/buildingdto")
+    public BuildingDTO updateBuilding(@RequestBody(required = false) BuildingDTO buildingdto) {
+    	BuildingDTO buildingAfter = buildingService.updateBuilding(buildingdto);
+
+        return buildingAfter;
+    }
 }
