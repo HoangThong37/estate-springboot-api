@@ -17,11 +17,15 @@ Xây dựng api website quản lý văn phòng cho thuê với logic cao áp d�
 
 ## Chức năng tìm kiếm đã được update thêm các cách khác nhau
 
-| Cách sử dụng | Chi tiết (Kết quả đạt được) |
-|--------------|:------:-------------------|
-| Code thuần ban đầu   | Chạy được, code dài dòng, không tối ưu |
-| Áp dụng Map  | chạy tốt, code tối ưu hơn, build được hàm MapUtils, dùng Jdbc nên số lượng code vẫn lớn |
-| Áp dụng Buider, jpa..  | chạy tốt, code tối ưu, ngắn gọn hơn, học được thêm kĩ thuật mới |
+1. Code thuần ban đầu  
+  - Chạy được, code dài dòng, không tối ưu 
+2. Áp dụng Map
+  - Chạy tốt, code tối ưu hơn, build được hàm MapUtils, dùng Jdbc nên số lượng code vẫn lớn 
+3.  Áp dụng Buider, Jpa..
+  - Chạy tốt, code tối ưu, ngắn gọn hơn, học được thêm kĩ thuật mới
+
+## ĐANG UPDATE README.MD
+
 
 
 
