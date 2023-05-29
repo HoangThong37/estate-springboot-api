@@ -2,7 +2,6 @@ package com.laptrinhjavaweb.api;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,11 +11,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.laptrinhjavaweb.dto.BuildingDTO;
+import com.laptrinhjavaweb.dto.request.AssignmentBuildingRequest;
 import com.laptrinhjavaweb.dto.request.BuildingDeleteRequest;
+import com.laptrinhjavaweb.dto.request.BuildingSearchRequest;
 import com.laptrinhjavaweb.dto.response.BuildingSearchResponse;
 import com.laptrinhjavaweb.dto.response.BuildingTypesResponse;
 import com.laptrinhjavaweb.dto.response.StaffResponseDTO;
@@ -41,9 +41,8 @@ public class BuildingAPI {
 	
 	
 	@GetMapping("/api/building")
-    public List<BuildingSearchResponse> searchBuilding(@RequestParam(required = false) Map<String, Object> fieldSearch,
-            @RequestParam(required = false) List<String> types) throws SQLException {
-		return buildingService.getBuildingList(fieldSearch, types);
+    public List<BuildingSearchResponse> searchBuilding(BuildingSearchRequest buildingSearchRequest) throws SQLException {
+		return buildingService.findAll(buildingSearchRequest);
    }
 	
     @PostMapping("/api/building")
@@ -54,8 +53,8 @@ public class BuildingAPI {
     // delete one id
     @DeleteMapping("/api/building/{id}")
     public void deleteBuilding(@PathVariable("id") Long id) throws NotFoundException {
-        buildingService.removeOneBuilding(id);
-        
+        //buildingService.removeOneBuilding(id);
+       
     }
     
     // delete n id
@@ -91,5 +90,12 @@ public class BuildingAPI {
     	BuildingDTO buildingAfter = buildingService.updateBuilding(buildingdto);
 
         return buildingAfter;
+    }
+    
+    @PostMapping("/api/building/{id}/assignment")
+    public AssignmentBuildingRequest assignmentBuilding(@RequestBody(required = false) AssignmentBuildingRequest assignmentBuilding
+            ,@PathVariable("id") Long buildingId) {
+        buildingService.assignmentBuilding(assignmentBuilding, buildingId);
+        return assignmentBuilding;
     }
 }

@@ -1,16 +1,16 @@
 package com.laptrinhjavaweb.converter;
 
-import com.laptrinhjavaweb.dto.UserDTO;
-import com.laptrinhjavaweb.dto.response.StaffResponseDTO;
-import com.laptrinhjavaweb.entity.UserEntity;
-import com.laptrinhjavaweb.repository.UserRepositoryCustom;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.laptrinhjavaweb.dto.UserDTO;
+import com.laptrinhjavaweb.dto.response.StaffResponseDTO;
+import com.laptrinhjavaweb.entity.UserEntity;
+import com.laptrinhjavaweb.repository.UserRepository;
 
 @Component
 public class UserConverter {
@@ -19,7 +19,7 @@ public class UserConverter {
     private ModelMapper modelMapper;
     
     @Autowired
-    private UserRepositoryCustom userRepository;
+    private UserRepository userRepository;
 
     public UserDTO convertToDto (UserEntity entity){
         UserDTO result = modelMapper.map(entity, UserDTO.class);

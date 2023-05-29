@@ -10,7 +10,7 @@ import com.laptrinhjavaweb.converter.UserConverter;
 import com.laptrinhjavaweb.dto.UserDTO;
 import com.laptrinhjavaweb.dto.response.StaffResponseDTO;
 import com.laptrinhjavaweb.entity.UserEntity;
-import com.laptrinhjavaweb.repository.impl.UserRepositoryImpl;
+import com.laptrinhjavaweb.repository.UserRepository;
 import com.laptrinhjavaweb.service.IUserService;
 
 @Service
@@ -18,7 +18,7 @@ public class UserService implements IUserService {
 
   
     @Autowired
-    private UserRepositoryImpl userRepoCustom;
+    private UserRepository userRepoCustom;
 
     @Autowired
     private UserConverter userConverter;

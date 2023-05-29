@@ -6,7 +6,7 @@ import com.laptrinhjavaweb.dto.UserDTO;
 import com.laptrinhjavaweb.dto.response.StaffResponseDTO;
 
 public interface IUserService {
-//    UserDTO findOneByUserNameAndStatus(String name, int status);
+//	UserDTO findOneByUserNameAndStatus(String name, int status);
 //    List<UserDTO> getUsers(String searchValue, Pageable pageable);
 //    int getTotalItems(String searchValue);
 //    UserDTO findOneByUserName(String userName);
@@ -17,7 +17,7 @@ public interface IUserService {
 //    UserDTO resetPassword(long id);
 //    UserDTO updateProfileOfUser(String id, UserDTO userDTO);
 //    void delete(long[] ids);
-    //Map<Long, String> getStaffMaps();
+//    //Map<Long, String> getStaffMaps();
     List<UserDTO> getAllStaff();
 
     List<StaffResponseDTO> finAllStaffByBuilding(Long id);
